@@ -1,0 +1,242 @@
+---
+title: Contributing to Starlight
+description: Learn how to contribute to the Starlight project, from reporting bugs to submitting pull requests and translating documentation.
+---
+
+We welcome contributions of any size and contributors of any skill level. As an open source project, we believe in giving back to our contributors. We are happy to help with guidance on PRs, technical writing, and turning any feature idea into a reality.
+
+## Ways to Contribute
+
+There are many ways to contribute to Starlight, whether you're a developer, writer, designer, or just someone who wants to help improve the documentation.
+
+<CardGroup cols={2}>
+  <Card title="Report Issues" icon="bug" href="https://github.com/withastro/starlight/issues/new/choose">
+    Found a bug or unclear documentation? Open an issue to let us know.
+  </Card>
+  
+  <Card title="Submit Pull Requests" icon="git-pull-request" href="https://github.com/withastro/starlight/pulls">
+    Fix bugs, add features, or improve documentation with a PR.
+  </Card>
+  
+  <Card title="Translate Documentation" icon="languages" href="https://i18n.starlight.astro.build">
+    Help translate Starlight's UI and docs into other languages.
+  </Card>
+  
+  <Card title="Review Code" icon="eye" href="https://github.com/withastro/starlight/pulls">
+    Review pull requests to help the team merge contributions faster.
+  </Card>
+</CardGroup>
+
+## Getting Started
+
+### Prerequisites
+
+Before you begin, make sure you have:
+
+- **Node.js** (v16 or higher)
+- **pnpm** (v8.2 or higher)
+- A GitHub account
+
+### Development Setup
+
+You can develop locally or use GitHub Codespaces to get started quickly.
+
+#### Option 1: Develop Locally
+
+1. **Fork the repository** - Click the Fork button on the [Starlight repository](https://github.com/withastro/starlight)
+
+2. **Clone your fork** - Replace `YOUR-USERNAME` with your GitHub username:
+
+   ```bash
+   git clone https://github.com/YOUR-USERNAME/starlight.git
+   cd starlight
+   ```
+
+3. **Install dependencies**:
+
+   ```bash
+   pnpm i
+   ```
+
+4. **Generate TypeScript types**:
+
+   ```bash
+   cd docs
+   pnpm astro sync
+   ```
+
+5. **Start the dev server**:
+
+   ```bash
+   pnpm dev
+   ```
+
+   Visit `http://localhost:4321` to see your changes.
+
+#### Option 2: Use GitHub Codespaces
+
+1. Create a new codespace at [codespaces.new/withastro/starlight](https://codespaces.new/withastro/starlight)
+2. Generate types: `pnpm astro sync`
+3. Start the dev server: `cd docs && pnpm dev --host`
+
+## Repository Structure
+
+Starlight is a monorepo containing several projects:
+
+- **`docs/`** - The Starlight documentation site
+- **`packages/starlight/`** - The main Starlight integration package
+- **`packages/`** - Additional Starlight packages
+- **`examples/`** - Example projects using Starlight
+
+## Making a Pull Request
+
+### Adding a Changeset
+
+When making changes that impact users (changes to `packages/*`), add a changeset:
+
+```bash
+pnpm exec changeset
+```
+
+Documentation-only changes (`docs/*`) and examples (`examples/*`) do not need changesets.
+
+### Pull Request Guidelines
+
+- Write clear, descriptive commit messages
+- Include tests for new features
+- Update documentation as needed
+- Follow the existing code style
+- Keep PRs focused on a single issue or feature
+
+## Testing
+
+### Visual Changes
+
+Test your changes by running the docs dev server:
+
+```bash
+cd docs
+pnpm dev
+```
+
+**Note:** Changes to the Starlight integration require restarting the dev server.
+
+### Link Checking
+
+Check for broken links in the documentation:
+
+```bash
+cd docs
+pnpm linkcheck
+```
+
+### Unit Tests
+
+Run unit tests with Vitest:
+
+```bash
+cd packages/starlight
+pnpm test
+```
+
+For test coverage:
+
+```bash
+pnpm test:coverage
+```
+
+### End-to-End Tests
+
+Run E2E tests with Playwright:
+
+```bash
+cd packages/starlight
+pnpm test:e2e
+```
+
+## Translation Contributions
+
+Translations help make Starlight accessible to more people. You can contribute by:
+
+### Translating Starlight's UI
+
+Add or update translation files in `packages/starlight/translations/`. Each language's JSON file follows the [translation structure in the docs](https://starlight.astro.build/guides/i18n/#translate-starlights-ui).
+
+Watch the [video introduction to Starlight's translation files](https://scrimba.com/scrim/cpb44bt3) for a visual walkthrough.
+
+### Translating Documentation
+
+Help translate the Starlight documentation:
+
+- Review [open translation PRs](https://github.com/withastro/starlight/pulls)
+- Update out-of-date translated pages
+- Add untranslated pages
+
+Track translation progress at [i18n.starlight.astro.build](https://i18n.starlight.astro.build).
+
+## Contributing to the Showcase
+
+### Add Your Site
+
+Built a site with Starlight? Add it to the [showcase](https://starlight.astro.build/resources/showcase/):
+
+1. Add a screenshot (800×450px PNG) to `docs/src/assets/showcase/`
+2. Name it after your domain: `example.com.png`
+3. Add your site entry to `docs/src/components/showcase-sites.astro`
+4. Open a pull request
+
+### Add Your Theme
+
+Created a theme for Starlight? Share it on the [themes page](https://starlight.astro.build/resources/themes/):
+
+1. Take screenshots of light and dark modes (1280×720px)
+2. Add screenshots to `docs/src/assets/themes/` as `theme-name-light.png` and `theme-name-dark.png`
+3. Add your theme entry to `docs/src/content/docs/resources/themes.mdx`
+4. Open a pull request
+
+## Understanding Starlight
+
+### Architecture
+
+- **Astro Integration** - Starlight is built as an Astro integration (see [`packages/starlight/index.ts`](https://github.com/withastro/starlight/blob/main/packages/starlight/index.ts))
+- **Single Route Template** - Most pages use [`packages/starlight/index.astro`](https://github.com/withastro/starlight/blob/main/packages/starlight/index.astro)
+- **Content Collections** - Content comes from the `docs` [content collection](https://docs.astro.build/en/guides/content-collections/)
+- **Framework-Agnostic** - Components use custom elements instead of framework-specific code
+
+### Browser Support
+
+Starlight supports [modern browsers](https://browsersl.ist/#q=%3E+0.5%25%2C+not+dead%2C+Chrome+%3E%3D+105%2C+Edge+%3E%3D+105%2C+Firefox+%3E%3D+121%2C+Safari+%3E%3D+15.4%2C+iOS+%3E%3D+15.4%2C+not+op_mini+all). Use [Can I use](https://caniuse.com) to check feature compatibility.
+
+## Community
+
+### Get Help
+
+Join the community to get help and discuss Starlight:
+
+- **Discord** - Join the [#starlight channel](https://astro.build/chat) in the Astro Discord
+- **GitHub Discussions** - Ask questions in [GitHub Discussions](https://github.com/withastro/starlight/discussions)
+- **GitHub Issues** - Report bugs and request features via [issues](https://github.com/withastro/starlight/issues)
+
+### Code of Conduct
+
+All contributors are expected to follow the [Code of Conduct](https://github.com/withastro/.github/blob/main/CODE_OF_CONDUCT.md).
+
+### Contributor Resources
+
+- [Contributor Manual](https://github.com/withastro/starlight/blob/main/CONTRIBUTING.md) - Full contributing guidelines
+- [Community Guide](https://github.com/withastro/.github/blob/main/COMMUNITY_GUIDE.md) - How to engage with the community
+- [Astro Integration API](https://docs.astro.build/en/reference/integrations-reference/) - Learn about Astro integrations
+- [i18n Contribution Guidelines](https://contribute.docs.astro.build/guides/i18n/) - Translation standards and process
+
+## Tips for New Contributors
+
+<Card icon="lightbulb">
+  New to open source? Check out [GitHub's Quickstart Guide](https://docs.github.com/en/get-started/quickstart/hello-world) for helpful information on working with GitHub.
+</Card>
+
+- Look for ["good first issue"](https://github.com/withastro/starlight/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22+) labels
+- Start with documentation improvements
+- Ask questions in Discord before starting work on a feature
+- Read existing PRs to understand the review process
+
+Thank you for contributing to Starlight! Your efforts help make documentation better for everyone.

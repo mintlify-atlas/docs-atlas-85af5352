@@ -1,0 +1,183 @@
+---
+title: starlight() Integration
+description: API reference for the main Starlight integration function used in Astro configuration.
+---
+
+The `starlight()` function is the main Astro integration for Starlight. It configures your documentation site and returns an integration object that Astro uses to set up the documentation framework.
+
+## Import
+
+```ts
+import starlight from '@astrojs/starlight';
+```
+
+## Usage
+
+Add the `starlight()` integration to your `astro.config.mjs` file:
+
+```js title="astro.config.mjs"
+import { defineConfig } from 'astro/config';
+import starlight from '@astrojs/starlight';
+
+export default defineConfig({
+  integrations: [
+    starlight({
+      title: 'My Docs',
+      // Additional configuration options...
+    }),
+  ],
+});
+```
+
+## Function Signature
+
+```ts
+function starlight(
+  userOpts: StarlightUserConfigWithPlugins
+): AstroIntegration
+```
+
+### Parameters
+
+#### `userOpts`
+
+Type: `StarlightUserConfigWithPlugins`
+
+The configuration object for your Starlight site. This must be an object (not `null`, an array, or other types) and must include at least a `title` property.
+
+See the [Configuration Reference](/reference/configuration/) for all available options.
+
+### Return Value
+
+Returns an `AstroIntegration` object with the following properties:
+
+- **`name`**: `'@astrojs/starlight'`
+- **`hooks`**: Integration lifecycle hooks that Astro calls at various points during the build process
+
+## Integration Hooks
+
+The Starlight integration implements the following Astro integration hooks:
+
+### `astro:config:setup`
+
+Called during the Astro configuration setup phase. This hook:
+
+- Runs all configured Starlight plugins
+- Processes i18n configuration and translations
+- Injects routes for documentation pages and the 404 page
+- Adds built-in integrations (Expressive Code, Sitemap, MDX) if not already present
+- Configures Vite plugins for CSS layer ordering and user config
+- Sets up remark and rehype plugins for Markdown processing
+- Configures scoped style strategy and prefetch behavior
+
+**Parameters:**
+
+```ts
+{
+  addMiddleware: (options: { entrypoint: string; order: string }) => void;
+  command: 'dev' | 'build' | 'preview';
+  config: AstroConfig;
+  injectRoute: (route: RouteOptions) => void;
+  isRestart: boolean;
+  logger: AstroIntegrationLogger;
+  updateConfig: (config: AstroUserConfig) => void;
+}
+```
+
+### `astro:config:done`
+
+Called after Astro configuration is finalized. This hook injects TypeScript type definitions for plugin translations.
+
+**Parameters:**
+
+```ts
+{
+  injectTypes: (options: { filename: string; content: string }) => void;
+}
+```
+
+### `astro:build:done`
+
+Called after the build is complete. If Pagefind is enabled, this hook runs the Pagefind indexer to generate search indexes.
+
+**Parameters:**
+
+```ts
+{
+  // Standard Astro build:done hook parameters
+}
+```
+
+## Configuration Object
+
+The main configuration object passed to `starlight()` supports all Starlight configuration options plus an optional `plugins` array:
+
+### `plugins`
+
+Type: `StarlightPlugin[]`  
+Optional
+
+An array of Starlight plugins to extend functionality.
+
+```js title="astro.config.mjs"
+import starlight from '@astrojs/starlight';
+import starlightPlugin from 'starlight-plugin-example';
+
+export default defineConfig({
+  integrations: [
+    starlight({
+      title: 'My Docs',
+      plugins: [starlightPlugin()],
+    }),
+  ],
+});
+```
+
+See the [Plugin API](/api/plugin-api/) reference for details on creating plugins.
+
+## Error Handling
+
+The integration will throw an `AstroError` if:
+
+- The configuration is not an object (e.g., `null`, array, string, etc.)
+- Required configuration options are missing or invalid
+- Plugin configuration is invalid
+- Pagefind is enabled but prerendering is disabled
+
+## Built-in Integrations
+
+Starlight automatically includes and configures the following integrations unless they're already present in your Astro config:
+
+- **Expressive Code** (`astro-expressive-code`) - Syntax highlighting for code blocks
+- **Sitemap** (`@astrojs/sitemap`) - Generates a sitemap for your site
+- **MDX** (`@astrojs/mdx`) - Enables MDX support for documentation pages
+
+## Injected Routes
+
+The integration automatically injects the following routes:
+
+### Catch-all route
+
+**Pattern:** `[...slug]`  
+**Entrypoint:** `@astrojs/starlight/routes/static/index.astro` (if prerender is true) or `@astrojs/starlight/routes/ssr/index.astro`
+
+Handles all documentation page requests.
+
+### 404 route
+
+**Pattern:** `404`  
+**Entrypoint:** `@astrojs/starlight/routes/static/404.astro` (if prerender is true) or `@astrojs/starlight/routes/ssr/404.astro`
+
+Handles 404 errors. Can be disabled with `disable404Route: true` in your config.
+
+## Type Definitions
+
+Starlight includes TypeScript type definitions that are automatically loaded when you import the integration:
+
+- `locals.d.ts` - Adds Starlight-specific properties to `Astro.locals`
+- `i18n.d.ts` - Internationalization type definitions
+- `virtual.d.ts` - Virtual module type definitions
+
+## Source Location
+
+`~/workspace/source/packages/starlight/index.ts:33-155`

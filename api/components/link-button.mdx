@@ -1,0 +1,105 @@
+---
+title: LinkButton
+description: API reference for the LinkButton component used to create styled call-to-action links.
+---
+
+The `<LinkButton>` component creates a styled button-like link with support for icons. It's commonly used for call-to-action links on landing pages.
+
+## Import
+
+```tsx
+import { LinkButton } from '@astrojs/starlight/components';
+```
+
+## Props
+
+<ParamField path="href" type="string | URL" required>
+  The URL the link should navigate to.
+</ParamField>
+
+<ParamField path="variant" type="'primary' | 'secondary' | 'minimal'" default="'primary'">
+  The visual style variant of the link button.
+  
+  - `primary` - Filled with accent color background
+  - `secondary` - Outlined with border
+  - `minimal` - Plain link with no border or background
+</ParamField>
+
+<ParamField path="icon" type="StarlightIcon">
+  Optional icon to display alongside the link text. Must be a valid icon name from Starlight's icon set.
+</ParamField>
+
+<ParamField path="iconPlacement" type="'start' | 'end'" default="'end'">
+  Position of the icon relative to the link text.
+</ParamField>
+
+<ParamField path="class" type="string">
+  Optional CSS class name(s) to apply to the link element.
+</ParamField>
+
+## Additional Props
+
+The LinkButton component also accepts all standard HTML `<a>` element attributes (except `href` which is typed more strictly).
+
+## Usage
+
+### Basic link button
+
+```mdx
+<LinkButton href="/docs/getting-started">Get Started</LinkButton>
+```
+
+### Different variants
+
+```mdx
+<LinkButton href="/docs" variant="primary">
+  Primary Action
+</LinkButton>
+
+<LinkButton href="/docs" variant="secondary">
+  Secondary Action
+</LinkButton>
+
+<LinkButton href="/docs" variant="minimal">
+  Learn more
+</LinkButton>
+```
+
+### With icon
+
+```mdx
+<LinkButton href="/docs/intro" icon="rocket">
+  Quick Start
+</LinkButton>
+```
+
+### Icon at start
+
+```mdx
+<LinkButton href="/download" icon="download" iconPlacement="start">
+  Download Now
+</LinkButton>
+```
+
+### External link
+
+```mdx
+<LinkButton href="https://github.com/example/repo" icon="external" target="_blank">
+  View on GitHub
+</LinkButton>
+```
+
+### Multiple buttons
+
+```mdx
+<LinkButton href="/docs" variant="primary" icon="rocket">
+  Get Started
+</LinkButton>
+<LinkButton href="/examples" variant="secondary">
+  View Examples
+</LinkButton>
+```
+
+## Styling
+
+The LinkButton component is styled with rounded corners and appropriate padding. The size and spacing automatically adjust for larger screens (≥ 50rem).

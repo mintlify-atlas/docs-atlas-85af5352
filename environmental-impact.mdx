@@ -1,0 +1,311 @@
+---
+title: Environmental Impact
+description: Learn how Starlight helps you build eco-friendly documentation sites with minimal carbon footprint.
+---
+
+The climate impact of the web industry is significant, with estimates ranging from [2% to 4% of global carbon emissions][climate-impact] — roughly equivalent to the airline industry. As developers and content creators, we have a responsibility to minimize the environmental footprint of the websites we build.
+
+The good news? **Choosing Starlight is already a great start.**
+
+<Note>
+  According to the [Website Carbon Calculator][wcc], Starlight documentation sites are **cleaner than 98% of web pages tested**, producing only **0.01g of CO₂ per page visit**.
+</Note>
+
+## Why Starlight is Eco-Friendly
+
+Starlight is designed from the ground up to be environmentally sustainable:
+
+### Minimal Page Weight
+
+The more data a web page transfers, the more energy it requires. In 2023, the median web page required users to download over 2,000 KB of data according to [HTTP Archive data][http-archive].
+
+**Starlight's approach:**
+- **First visit**: Less than 50 KB of compressed data (just 2.5% of the median)
+- **Subsequent visits**: As little as 10 KB with proper caching
+- **Optimized assets**: All CSS, JavaScript, and fonts are minified and compressed
+
+### Zero Client-Side JavaScript by Default
+
+Components built with UI frameworks like React or Vue can add large amounts of JavaScript to a page. Starlight leverages [Astro Islands][astro-islands] to ensure components load **zero client-side JavaScript by default**.
+
+This means:
+- Faster page loads
+- Lower power consumption on user devices
+- Reduced data transfer
+- Better performance on low-end devices
+
+### Efficient Caching Strategy
+
+Starlight uses smart caching to reduce unnecessary downloads. All bundled assets in the `/_astro/` directory can be cached indefinitely, ensuring users only download new content when it actually changes.
+
+## Reducing Your Documentation's Carbon Footprint
+
+While Starlight provides an excellent baseline, here are additional steps you can take to minimize environmental impact:
+
+### Optimize Images
+
+<Warning>
+  Images are often the largest contributor to page weight in documentation sites.
+</Warning>
+
+Starlight uses Astro's [optimized asset support][astro-assets] to automatically optimize images in your Markdown and MDX files:
+
+```md
+![A description of the image](./my-image.png)
+```
+
+This automatically:
+- Converts images to modern formats (WebP, AVIF)
+- Generates multiple sizes for responsive images
+- Lazy-loads images below the fold
+- Compresses images without visible quality loss
+
+**Best practices:**
+- Use SVG for icons and simple graphics
+- Compress screenshots before adding them to your docs
+- Consider using diagrams instead of screenshots when possible
+- Only include images that add real value to your documentation
+
+### Implement Smart Caching
+
+Caching controls how long browsers store and reuse downloaded data. A good caching strategy ensures users get fresh content while avoiding redundant downloads.
+
+Starlight's bundled assets can be safely cached forever using the [`Cache-Control` HTTP header][cache-control]:
+
+```
+Cache-Control: public, max-age=604800, immutable
+```
+
+#### Platform-Specific Configuration
+
+<Accordion title="Netlify">
+  Create a `public/_headers` file in your project:
+  
+  ```
+  /_astro/*
+    Cache-Control: public
+    Cache-Control: max-age=604800
+    Cache-Control: immutable
+  ```
+</Accordion>
+
+<Accordion title="Vercel">
+  Vercel applies optimal caching automatically — no configuration needed!
+</Accordion>
+
+<Accordion title="Cloudflare Pages">
+  Add cache rules in your `_headers` file:
+  
+  ```
+  /_astro/*
+    Cache-Control: public, max-age=604800, immutable
+  ```
+</Accordion>
+
+### Minimize Third-Party Scripts
+
+Third-party scripts like analytics, chat widgets, and social media embeds can significantly increase page weight and power consumption.
+
+**Recommendations:**
+
+<Steps>
+  <Step title="Choose lightweight analytics">
+    Instead of heavy analytics platforms, consider privacy-focused, lightweight options:
+    
+    - [Plausible][plausible] (< 1 KB)
+    - [Fathom][fathom] (< 1 KB)
+    - [Cabin][cabin] (< 1 KB)
+    
+    These alternatives provide essential insights while using minimal resources.
+  </Step>
+  
+  <Step title="Lazy-load video embeds">
+    Videos from YouTube and Vimeo can be improved by [loading on user interaction][lazy-video]. The [`astro-embed`][astro-embed] package makes this easy:
+    
+    ```astro
+    ---
+    import { YouTube } from '@astro-community/astro-embed-youtube';
+    ---
+    
+    <YouTube id="video-id" />
+    ```
+  </Step>
+  
+  <Step title="Audit your dependencies">
+    Regularly review all third-party scripts and remove any that aren't essential. Every script adds to your carbon footprint.
+  </Step>
+</Steps>
+
+<Note>
+  **Did you know?** Parsing and compiling JavaScript is one of the most expensive tasks browsers perform. [JavaScript can take more than 30 times longer to process][cost-of-js] compared to rendering a JPEG image of the same size.
+</Note>
+
+### Choose Green Hosting
+
+Where your documentation is hosted has a significant impact on environmental sustainability. Data centers can have large ecological footprints through:
+
+- High electricity consumption
+- Intensive water usage for cooling
+- Carbon emissions from non-renewable energy
+
+**Action items:**
+
+<CardGroup cols={2}>
+  <Card title="Use Renewable Energy Hosts" icon="leaf">
+    Choose hosting providers that use renewable energy. The [Green Web Directory][green-web] helps you find eco-friendly hosting companies.
+  </Card>
+  
+  <Card title="Edge Deployment" icon="globe">
+    Use edge-based platforms like Cloudflare Pages or Vercel that serve content from locations closer to your users, reducing data transfer distances.
+  </Card>
+  
+  <Card title="CDN Optimization" icon="server">
+    Leverage content delivery networks (CDNs) to reduce the distance data travels and decrease energy consumption.
+  </Card>
+  
+  <Card title="Monitor Usage" icon="chart-bar">
+    Use tools like the Website Carbon Calculator to track your site's environmental impact over time.
+  </Card>
+</CardGroup>
+
+## Framework Comparisons
+
+Curious how Starlight compares to other documentation frameworks? These tests with the [Website Carbon Calculator][wcc] show CO₂ emissions per page visit:
+
+| Framework | CO₂ per Page Visit | Rating | Environmental Impact |
+|-----------|-------------------|--------|----------------------|
+| [Starlight][sl-carbon] | 0.01g | A+ | Cleaner than 98% of pages |
+| [Sphinx][sx-carbon] | 0.01g | A+ | Excellent |
+| [Read the Docs][rtd-carbon] | 0.03g | A+ | Very good |
+| [VitePress][vp-carbon] | 0.04g | A | Good |
+| [docsify][dy-carbon] | 0.05g | A | Good |
+| [mdBook][md-carbon] | 0.05g | A | Good |
+| [Nextra][nx-carbon] | 0.05g | A | Good |
+| [MkDocs][mk-carbon] | 0.07g | A | Good |
+| [Fumadocs][fs-carbon] | 0.07g | A | Good |
+| [Docusaurus][ds-carbon] | 0.10g | B | Moderate |
+| [Docus][dc-carbon] | 0.11g | B | Moderate |
+| [GitBook][gb-carbon] | 0.42g | F | High impact |
+| [Mintlify][mt-carbon] | 0.48g | F | High impact |
+
+<small>Data collected August 2025. Click framework names for current figures.</small>
+
+## Power Consumption
+
+Beyond data transfer, how a web page is built affects the processing power needed on user devices:
+
+### Starlight's Efficiency
+
+- **Static HTML**: Pre-rendered at build time, not on user devices
+- **Minimal JavaScript**: Reduces CPU usage during page load and interaction
+- **Optimized rendering**: Browser-native CSS and HTML require less processing
+
+### User Benefits
+
+<CardGroup cols={3}>
+  <Card title="Longer Battery Life" icon="battery-full">
+    Less processing means mobile devices and laptops use less power.
+  </Card>
+  
+  <Card title="Better Performance" icon="gauge-high">
+    Pages load faster and remain responsive on low-end hardware.
+  </Card>
+  
+  <Card title="Accessibility" icon="universal-access">
+    Lightweight pages are accessible to users with older devices or slow connections.
+  </Card>
+</CardGroup>
+
+## Measuring Your Impact
+
+Regularly assess your documentation site's environmental footprint:
+
+### Tools for Measurement
+
+<Steps>
+  <Step title="Website Carbon Calculator">
+    [Website Carbon Calculator][wcc] provides instant CO₂ estimates and comparisons.
+  </Step>
+  
+  <Step title="GreenFrame">
+    [GreenFrame](https://greenframe.io/) measures the carbon footprint of user journeys through your site.
+  </Step>
+  
+  <Step title="Ecograder">
+    [Ecograder](https://ecograder.com/) analyzes environmental impact and provides actionable recommendations.
+  </Step>
+  
+  <Step title="WebPageTest Carbon Control">
+    [WebPageTest Carbon Control](https://www.webpagetest.org/carbon-control/) offers detailed performance and environmental metrics.
+  </Step>
+</Steps>
+
+## Best Practices Summary
+
+<Accordion title="Content Optimization">
+  - Compress and optimize all images
+  - Use SVG for icons and simple graphics
+  - Write efficient, semantic HTML
+  - Minimize custom CSS and JavaScript
+</Accordion>
+
+<Accordion title="Technical Configuration">
+  - Implement proper caching headers
+  - Enable compression (gzip/brotli)
+  - Use a CDN for static assets
+  - Minimize third-party scripts
+</Accordion>
+
+<Accordion title="Hosting & Deployment">
+  - Choose green hosting providers
+  - Use edge deployment when possible
+  - Monitor and optimize build processes
+  - Regularly audit your carbon footprint
+</Accordion>
+
+## Learn More
+
+### Articles and Talks
+
+- ["Building a greener web"](https://youtu.be/EfPoOt7T5lg) — Talk by Michelle Barker
+- ["Sustainable Web Development Strategies"](https://www.smashingmagazine.com/2022/10/sustainable-web-development-strategies-organization/) — Article by Michelle Barker
+- ["A sustainable web for everyone"](https://2021.stateofthebrowser.com/speakers/tom-greenwood/) — Talk by Tom Greenwood
+- ["How Web Content Can Affect Power Usage"](https://webkit.org/blog/8970/how-web-content-can-affect-power-usage/) — Article by Benjamin Poulain and Simon Fraser
+
+### Tools and Resources
+
+- [Website Carbon Calculator][wcc] — Calculate your site's carbon footprint
+- [Green Web Directory][green-web] — Find eco-friendly hosting providers
+- [Ecoping](https://ecoping.earth/) — Environmental performance monitoring
+- [The Green Web Foundation](https://www.thegreenwebfoundation.org/) — Resources for sustainable web development
+
+---
+
+By choosing Starlight and following these best practices, you're building documentation that's not only fast and accessible, but also environmentally responsible. Every optimization makes a difference.
+
+[climate-impact]: https://www.bbc.com/future/article/20200305-why-your-internet-habits-are-not-as-clean-as-you-think
+[wcc]: https://www.websitecarbon.com/
+[http-archive]: https://httparchive.org/reports/state-of-the-web
+[astro-islands]: https://docs.astro.build/en/concepts/islands/
+[astro-assets]: https://docs.astro.build/en/guides/images/
+[cache-control]: https://csswizardry.com/2019/03/cache-control-for-civilians/
+[plausible]: https://plausible.io/
+[fathom]: https://usefathom.com/
+[cabin]: https://withcabin.com/
+[lazy-video]: https://web.dev/iframe-lazy-loading/
+[astro-embed]: https://www.npmjs.com/package/astro-embed
+[cost-of-js]: https://medium.com/dev-channel/the-cost-of-javascript-84009f51e99e
+[green-web]: https://www.thegreenwebfoundation.org/directory/
+[sl-carbon]: https://www.websitecarbon.com/website/starlight-astro-build-getting-started/
+[sx-carbon]: https://www.websitecarbon.com/website/sphinx-doc-org-en-master-usage-quickstart-html/
+[rtd-carbon]: https://www.websitecarbon.com/website/docs-readthedocs-io-en-stable-index-html/
+[vp-carbon]: https://www.websitecarbon.com/website/vitepress-dev-guide-what-is-vitepress/
+[dy-carbon]: https://www.websitecarbon.com/website/docsify-js-org/
+[md-carbon]: https://www.websitecarbon.com/website/rust-lang-github-io-mdbook/
+[nx-carbon]: https://www.websitecarbon.com/website/nextra-site-docs-docs-theme-start/
+[fs-carbon]: https://www.websitecarbon.com/website/fumadocs-dev-docs-ui/
+[mk-carbon]: https://www.websitecarbon.com/website/mkdocs-org-getting-started/
+[ds-carbon]: https://www.websitecarbon.com/website/docusaurus-io-docs/
+[dc-carbon]: https://www.websitecarbon.com/website/docus-dev-en-getting-started-project-structure/
+[gb-carbon]: https://www.websitecarbon.com/website/gitbook-com-docs/
+[mt-carbon]: https://www.websitecarbon.com/website/mintlify-com-docs-quickstart/

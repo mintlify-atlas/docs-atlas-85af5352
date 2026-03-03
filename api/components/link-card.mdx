@@ -1,0 +1,97 @@
+---
+title: LinkCard
+description: API reference for the LinkCard component used to create prominent linked cards.
+---
+
+The `<LinkCard>` component displays a clickable card with a title, optional description, and an arrow icon. The entire card is clickable and provides visual feedback on hover.
+
+## Import
+
+```tsx
+import { LinkCard } from '@astrojs/starlight/components';
+```
+
+## Props
+
+<ParamField path="title" type="string" required>
+  The title to display in the card. Supports HTML content.
+</ParamField>
+
+<ParamField path="description" type="string">
+  Optional description text to display below the title.
+</ParamField>
+
+<ParamField path="href" type="string" required>
+  The URL the card should link to. Inherited from standard `<a>` element attributes.
+</ParamField>
+
+## Additional Props
+
+The LinkCard component accepts all standard HTML `<a>` element attributes (except `title` which is used as a prop for the card's heading).
+
+## Usage
+
+### Basic link card
+
+```mdx
+<LinkCard
+  title="Getting Started"
+  href="/docs/getting-started"
+/>
+```
+
+### With description
+
+```mdx
+<LinkCard
+  title="Installation Guide"
+  description="Learn how to install and set up the project in minutes."
+  href="/docs/installation"
+/>
+```
+
+### External link
+
+```mdx
+<LinkCard
+  title="GitHub Repository"
+  description="View the source code and contribute to the project."
+  href="https://github.com/example/repo"
+  target="_blank"
+/>
+```
+
+### Multiple link cards
+
+```mdx
+<LinkCard
+  title="Quick Start"
+  description="Get up and running in 5 minutes."
+  href="/docs/quickstart"
+/>
+
+<LinkCard
+  title="API Reference"
+  description="Complete API documentation for all components."
+  href="/docs/api"
+/>
+
+<LinkCard
+  title="Examples"
+  description="Browse example projects and code samples."
+  href="/docs/examples"
+/>
+```
+
+## Styling
+
+The LinkCard component features:
+- Bordered container with rounded corners
+- Subtle shadow effect
+- Right arrow icon (automatically flips in RTL languages)
+- Hover state with background color change
+- The entire card is clickable (using CSS absolute positioning)
+
+## Accessibility
+
+The component uses proper semantic HTML with an anchor element inside a container. The entire card area is clickable while maintaining keyboard navigation and screen reader compatibility.

@@ -1,0 +1,156 @@
+---
+title: Code
+description: Learn how to display syntax highlighted code in Starlight without Markdown code blocks.
+---
+
+
+The `<Code>` component renders syntax highlighted code. It is useful when using a Markdown code block is not possible, for example, to render data coming from external sources like files, databases, or APIs.
+
+## Import
+
+```tsx
+```
+
+## Usage
+
+Use the `<Code>` component to render syntax highlighted code, for example when displaying code fetched from external sources:
+
+```mdx
+
+export const exampleCode = `console.log('Hello from external source!');`;
+
+<Code code={exampleCode} lang="js" title="example.js" />
+```
+
+### Highlighting and Annotations
+
+The `<Code>` component supports all the features of Expressive Code, including line highlighting, diff markers, and text markers:
+
+```mdx
+
+export const code = `function greet(name) {
+  console.log('Hello, ' + name + '!');
+}`;
+
+<Code 
+  code={code} 
+  lang="js" 
+  title="greet.js"
+  mark={[2]}
+  ins={[2]}
+/>
+```
+
+### Import Files as Code
+
+In MDX files and Astro components, use Vite's `?raw` import suffix to import any code file as a string:
+
+```mdx
+import configCode from './config.json?raw';
+
+<Code code={configCode} lang="json" title="config.json" />
+```
+
+### Highlight Specific Text
+
+Mark specific text within your code using the `mark` prop:
+
+```mdx
+
+export const code = `console.log('This could come from a file or CMS!');`;
+export const highlights = ['file', 'CMS'];
+
+<Code code={code} lang="js" mark={highlights} />
+```
+
+### Show Insertions and Deletions
+
+Use the `ins` and `del` props to show added and removed lines:
+
+```mdx
+
+export const code = `const old = 'value';
+const new = 'better value';`;
+
+<Code 
+  code={code} 
+  lang="js" 
+  del={[1]}
+  ins={[2]}
+/>
+```
+
+## Component API
+
+### `<Code>` Props
+
+**Implementation:** [`Code.astro` (from Expressive Code)](https://github.com/expressive-code/expressive-code/blob/main/packages/astro-expressive-code/components/Code.astro)
+
+The `<Code>` component is exported from `@astrojs/starlight/components` but is actually provided by Astro Expressive Code. See the [Expressive Code "Code Component" docs](https://expressive-code.com/key-features/code-component/) for the complete list of available props.
+
+#### Common Props
+
+**`code`** (required)  
+**Type:** `string`  
+The code to display.
+
+**`lang`** (required)  
+**Type:** `string`  
+The language of the code for syntax highlighting (e.g., `'js'`, `'ts'`, `'python'`, `'css'`).
+
+**`title`**  
+**Type:** `string`  
+Optional title to display above the code block.
+
+**`mark`**  
+**Type:** `(number | string)[]`  
+Line numbers or text to highlight. Can be line numbers or text strings to highlight.
+
+**`ins`**  
+**Type:** `number[]`  
+Line numbers to mark as insertions (shown with green background).
+
+**`del`**  
+**Type:** `number[]`  
+Line numbers to mark as deletions (shown with red background).
+
+**`frame`**  
+**Type:** `'code' | 'terminal' | 'none'`  
+The frame style to use around the code block.
+
+**`collapse`**  
+**Type:** `string`  
+Make code blocks collapsible with a summary label.
+
+## Integration with Starlight
+
+Starlight includes Expressive Code by default and exports the `<Code>` component for convenience. All Expressive Code configuration in your `astro.config.mjs` applies to both:
+
+- Markdown code blocks (triple backticks)
+- The `<Code>` component
+
+```js
+// astro.config.mjs
+import { defineConfig } from 'astro/config';
+import starlight from '@astrojs/starlight';
+
+export default defineConfig({
+  integrations: [
+    starlight({
+      expressiveCode: {
+        themes: ['dracula', 'github-light'],
+        styleOverrides: {
+          borderRadius: '0.5rem',
+        },
+      },
+    }),
+  ],
+});
+```
+
+## Further Reading
+
+For complete documentation on all available props and features:
+
+- [Expressive Code Code Component Documentation](https://expressive-code.com/key-features/code-component/)
+- [Expressive Code Feature Overview](https://expressive-code.com/key-features/)

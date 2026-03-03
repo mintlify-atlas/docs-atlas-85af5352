@@ -1,0 +1,68 @@
+---
+title: Card
+description: API reference for the Card component used to display content in a visually distinct container.
+---
+
+The `<Card>` component displays content in a bordered container with an optional icon and title. Cards are typically used within a `<CardGrid>` to create a grid layout.
+
+## Import
+
+```tsx
+import { Card } from '@astrojs/starlight/components';
+```
+
+## Props
+
+<ParamField path="title" type="string" required>
+  The title to display at the top of the card. Supports HTML content.
+</ParamField>
+
+<ParamField path="icon" type="StarlightIcon">
+  Optional icon to display next to the title. Must be a valid icon name from Starlight's icon set.
+</ParamField>
+
+## Usage
+
+### Basic card
+
+```mdx
+<Card title="Getting Started">
+  Learn the basics of using this feature.
+</Card>
+```
+
+### Card with icon
+
+```mdx
+<Card title="Quick Start" icon="rocket">
+  Get up and running in minutes.
+</Card>
+```
+
+### Card grid
+
+Cards are typically used within a `CardGrid` component:
+
+```mdx
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid>
+  <Card title="Feature One" icon="star">
+    Description of feature one.
+  </Card>
+  <Card title="Feature Two" icon="rocket">
+    Description of feature two.
+  </Card>
+  <Card title="Feature Three" icon="puzzle">
+    Description of feature three.
+  </Card>
+</CardGrid>
+```
+
+## Children
+
+The component accepts any MDX content as children, which will be rendered in the card's body section.
+
+## Styling
+
+Cards automatically cycle through different color schemes (orange, purple, green, red, blue) based on their position in the DOM using CSS nth-child selectors.

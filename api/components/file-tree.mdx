@@ -1,0 +1,98 @@
+---
+title: FileTree
+description: API reference for the FileTree component used to display file and directory structures.
+---
+
+The `<FileTree>` component displays a file and directory structure with expandable folders and syntax highlighting for file/folder names.
+
+## Import
+
+```tsx
+import { FileTree } from '@astrojs/starlight/components';
+```
+
+## Props
+
+The FileTree component doesn't accept any props directly. The structure is defined using nested unordered lists in its children.
+
+## Usage
+
+### Basic file tree
+
+```mdx
+<FileTree>
+- src/
+  - components/
+    - Header.astro
+    - Footer.astro
+  - pages/
+    - index.astro
+    - about.astro
+  - styles/
+    - global.css
+- package.json
+- astro.config.mjs
+</FileTree>
+```
+
+### With comments
+
+You can add comments to explain files or directories:
+
+```mdx
+<FileTree>
+- src/
+  - components/
+    - Header.astro Component for site header
+    - Footer.astro Component for site footer
+  - pages/
+    - index.astro Home page
+- package.json Project dependencies
+</FileTree>
+```
+
+### Highlighting items
+
+Wrap items in `**` to highlight them:
+
+```mdx
+<FileTree>
+- src/
+  - components/
+    - **Header.astro** Important component
+  - pages/
+    - index.astro
+- package.json
+</FileTree>
+```
+
+### Placeholder entries
+
+Use `...` for placeholder entries:
+
+```mdx
+<FileTree>
+- src/
+  - components/
+    - Header.astro
+    - ...
+  - pages/
+    - index.astro
+- package.json
+</FileTree>
+```
+
+## Syntax
+
+The FileTree component uses a special markdown-like syntax:
+
+- Lines starting with `-` represent files or directories
+- Indentation (2 spaces) represents nesting
+- Directories end with `/`
+- Text after a file/directory name becomes a comment
+- Wrapping in `**` highlights the item
+- `...` creates a placeholder entry
+
+## Children
+
+The component expects its children to be formatted as a nested unordered list structure, which is processed and transformed into an interactive file tree visualization.

@@ -1,0 +1,435 @@
+---
+title: Authoring Content
+description: Master Markdown and MDX syntax for writing documentation in Starlight, including frontmatter, inline styles, code blocks, and special features.
+---
+
+Starlight supports the full range of [Markdown](https://daringfireball.net/projects/markdown/) syntax in `.md` files, plus frontmatter [YAML](https://dev.to/paulasantamaria/introduction-to-yaml-125f) for metadata like titles and descriptions.
+
+<Note>
+  If using MDX or Markdoc file formats, some Markdown features may work differently. Check the [MDX docs](https://mdxjs.com/docs/what-is-mdx/#markdown) or [Markdoc docs](https://markdoc.dev/docs/syntax) for specifics.
+</Note>
+
+## Frontmatter
+
+Customize individual pages by setting values in their frontmatter at the top of files between `---` separators:
+
+```md title="src/content/docs/example.md"
+---
+title: My page title
+description: This is my page description for SEO
+---
+
+Page content follows the second `---`.
+```
+
+**Every page must include at least a `title`.**
+
+<Tip>
+  See the [frontmatter reference](/reference/frontmatter/) for all available fields and how to add custom fields.
+</Tip>
+
+## Text Formatting
+
+### Inline Styles
+
+<CodeGroup>
+```md "Bold"
+Text can be **bold** using double asterisks.
+```
+
+```md "Italic"
+Text can be _italic_ using underscores.
+```
+
+```md "Strikethrough"
+Text can be ~~strikethrough~~ using double tildes.
+```
+
+```md "Inline Code"
+You can highlight `inline code` with backticks.
+```
+</CodeGroup>
+
+**Result:**
+- Text can be **bold** using double asterisks
+- Text can be _italic_ using underscores  
+- Text can be ~~strikethrough~~ using double tildes
+- You can highlight `inline code` with backticks
+
+### Links
+
+Create links to other pages or external sites:
+
+```md
+[Link to another page](/getting-started/)
+[External link](https://astro.build)
+```
+
+## Headings
+
+Structure your content using headings indicated by `#` symbols:
+
+```md
+## Heading Level 2
+### Heading Level 3
+#### Heading Level 4
+```
+
+<Warning>
+  Starlight automatically uses your page `title` as a top-level heading. Start your content with `##` (H2) headings.
+</Warning>
+
+### Automatic Anchor Links
+
+Using headings in Markdown automatically creates anchor links:
+
+```md
+---
+title: My page of content
+---
+
+## Introduction
+
+I can link to [my conclusion](#conclusion) lower on the same page.
+
+## Conclusion
+
+`https://my-site.com/page1/#introduction` navigates directly to my Introduction.
+```
+
+<Note>
+  Level 2 (`<h2>`) and Level 3 (`<h3>`) headings automatically appear in the page table of contents.
+</Note>
+
+## Images
+
+Starlight uses [Astro's built-in optimized asset support](https://docs.astro.build/en/guides/images/) for images.
+
+### Image Syntax
+
+<CodeGroup>
+```md "External Image"
+![An illustration of planets and stars](https://example.com/image.png)
+```
+
+```md "Local Image"
+![A rocketship in space](../../assets/images/rocket.svg)
+```
+</CodeGroup>
+
+Markdown and MDX support the standard syntax for displaying images with alt-text for screen readers and assistive technology.
+
+<Tip>
+  Always include descriptive alt-text to make your documentation accessible.
+</Tip>
+
+## Asides (Callouts)
+
+Asides are useful for displaying secondary information alongside your main content.
+
+### Aside Types
+
+Starlight provides custom Markdown syntax for asides using triple colons `:::`:
+
+<Steps>
+  <Step title="Note">
+    Default informational aside:
+
+    ```md
+    :::note
+    Starlight is a documentation website toolkit built with [Astro](https://astro.build/).
+    :::
+    ```
+  </Step>
+
+  <Step title="Tip">
+    Helpful suggestions:
+
+    ```md
+    :::tip[Did you know?]
+    Astro helps you build faster websites with "Islands Architecture".
+    :::
+    ```
+  </Step>
+
+  <Step title="Caution">
+    Warning about potential issues:
+
+    ```md
+    :::caution
+    If you are not sure you want an awesome docs site, think twice.
+    :::
+    ```
+  </Step>
+
+  <Step title="Danger">
+    Critical warnings:
+
+    ```md
+    :::danger
+    Your users may be more productive thanks to helpful Starlight features.
+
+    - Clear navigation
+    - User-configurable color theme
+    - i18n support
+    :::
+    ```
+  </Step>
+</Steps>
+
+### Custom Titles and Icons
+
+<CodeGroup>
+```md "Custom Title"
+:::tip[Did you know?]
+You can customize the aside title in square brackets.
+:::
+```
+
+```md "Custom Icon"
+:::tip{icon="heart"}
+You can specify a custom icon in curly brackets.
+:::
+```
+
+```md "Both"
+:::tip[Pro Tip]{icon="rocket"}
+Combine custom titles and icons for maximum impact.
+:::
+```
+</CodeGroup>
+
+<Note>
+  Icon names must match [one of Starlight's built-in icons](/reference/icons/#all-icons).
+</Note>
+
+## Code Blocks
+
+Code blocks are indicated by three backticks with an optional language identifier:
+
+````md
+```js
+// Javascript code with syntax highlighting
+var fun = function lang(l) {
+  dateformat.i18n = require('./lang/' + l);
+  return true;
+};
+```
+````
+
+### Expressive Code Features
+
+Starlight uses [Expressive Code](https://expressive-code.com/) to extend code block capabilities:
+
+<Accordion title="Line Highlighting">
+  Highlight specific lines using `{2-3}` syntax:
+
+  ````md
+  ```js {2-3}
+  function demo() {
+    // This line (#2) and the next one are highlighted
+    return 'This is line #3 of this snippet';
+  }
+  ```
+  ````
+</Accordion>
+
+<Accordion title="Text Markers">
+  Highlight specific text using quotation marks:
+
+  ````md
+  ```js "Individual terms" /Even.*supported/
+  // Individual terms can be highlighted, too
+  function demo() {
+    return 'Even regular expressions are supported';
+  }
+  ```
+  ````
+</Accordion>
+
+<Accordion title="Insertions and Deletions">
+  Mark code changes with `ins` and `del`:
+
+  ````md
+  ```js "return true;" ins="inserted" del="deleted"
+  function demo() {
+    console.log('These are inserted and deleted marker types');
+    // The return statement uses the default marker type
+    return true;
+  }
+  ```
+  ````
+</Accordion>
+
+<Accordion title="Diff Syntax">
+  Combine syntax highlighting with diff markers:
+
+  ````md
+  ```diff lang="js"
+    function thisIsJavaScript() {
+      // This entire block gets highlighted as JavaScript,
+      // and we can still add diff markers to it!
+  -   console.log('Old code to be removed')
+  +   console.log('New and shiny code!')
+    }
+  ```
+  ````
+</Accordion>
+
+### Code Block Frames and Titles
+
+<CodeGroup>
+```md "File Name Comment"
+\`\`\`js
+// my-test-file.js
+console.log('Hello World!');
+\`\`\`
+```
+
+```md "Title Attribute"
+\`\`\`bash title="Installing dependencies…"
+npm install
+\`\`\`
+```
+
+```md "No Frame"
+\`\`\`bash frame="none"
+echo "No terminal frame"
+\`\`\`
+```
+</CodeGroup>
+
+Code blocks automatically render in appropriate frames:
+- **Terminal frame** for shell languages (`bash`, `sh`, etc.)
+- **Editor frame** for other languages with titles
+- **Plain frame** when `frame="none"` is set
+
+## Additional Markdown Features
+
+### Blockquotes
+
+```md
+> This is a blockquote, commonly used when quoting another person or document.
+>
+> Blockquotes are indicated by a `>` at the start of each line.
+```
+
+### Details (Accordions)
+
+Use standard HTML `<details>` elements for collapsible content:
+
+```md
+<details>
+<summary>Where and when is Andromeda most visible?</summary>
+
+The Andromeda constellation is most visible in November at latitudes between `+90°` and `−40°`.
+</details>
+```
+
+### Footnotes
+
+Add footnotes for references without interrupting content flow:
+
+```md
+Here is a footnote[^1] with some additional text after it.
+
+[^1]: My reference.
+```
+
+### Lists and Tables
+
+Starlight supports all standard Markdown features like:
+- Ordered lists
+- Unordered lists  
+- Task lists
+- Tables
+- Horizontal rules
+
+<Tip>
+  See the [Markdown Cheat Sheet](https://www.markdownguide.org/cheat-sheet/) for a complete overview of Markdown syntax.
+</Tip>
+
+## Advanced Configuration
+
+### Markdown Plugins
+
+Starlight uses Astro's Markdown and MDX renderer built on remark and rehype. Add custom syntax by configuring plugins in your Astro config:
+
+```js title="astro.config.mjs"
+import { defineConfig } from 'astro/config';
+import starlight from '@astrojs/starlight';
+
+export default defineConfig({
+  markdown: {
+    remarkPlugins: [/* your remark plugins */],
+    rehypePlugins: [/* your rehype plugins */],
+  },
+  integrations: [starlight({ title: 'My Docs' })],
+});
+```
+
+<Note>
+  See ["Markdown Plugins"](https://docs.astro.build/en/guides/markdown-content/#markdown-plugins) in the Astro docs to learn more.
+</Note>
+
+## Markdoc Support
+
+Starlight supports authoring content in Markdoc using the experimental [Astro Markdoc integration](https://docs.astro.build/en/guides/integrations-guide/markdoc/).
+
+<Steps>
+  <Step title="Create new project with Markdoc">
+    Start with Markdoc pre-configured:
+
+    ```bash
+    npm create astro@latest -- --template starlight/markdoc
+    ```
+  </Step>
+
+  <Step title="Or add to existing project">
+    1. Add the Astro Markdoc integration:
+    ```bash
+    npx astro add markdoc
+    ```
+
+    2. Install the Starlight Markdoc preset:
+    ```bash
+    npm install @astrojs/starlight-markdoc
+    ```
+
+    3. Create `markdoc.config.mjs`:
+    ```js
+    import { defineMarkdocConfig } from '@astrojs/markdoc/config';
+    import starlightMarkdoc from '@astrojs/starlight-markdoc';
+
+    export default defineMarkdocConfig({
+      extends: [starlightMarkdoc()],
+    });
+    ```
+  </Step>
+</Steps>
+
+### Markdoc Preset Configuration
+
+The `starlightMarkdoc()` preset accepts configuration options:
+
+```js title="markdoc.config.mjs"
+export default defineMarkdocConfig({
+  extends: [
+    starlightMarkdoc({ 
+      headingLinks: false  // Disable heading anchor links
+    })
+  ],
+});
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Sidebar Navigation" href="/concepts/sidebar-navigation" icon="sidebar">
+    Learn how to configure your site's sidebar
+  </Card>
+  
+  <Card title="Components" href="/components/overview" icon="puzzle">
+    Use built-in components to enhance your docs
+  </Card>
+</CardGroup>

@@ -1,0 +1,383 @@
+---
+title: Manual Setup
+description: Learn how to manually add Starlight to an existing Astro project with step-by-step instructions.
+---
+
+The quickest way to create a new Starlight site is using `create astro` as shown in the [Quickstart](/quickstart) guide. If you want to add Starlight to an existing Astro project, this guide will walk you through the manual setup process.
+
+## Prerequisites
+
+Before you begin, you'll need:
+
+- An existing Astro project (version 5.5.0 or higher)
+- Node.js 18.17.1 or higher installed
+- Your package manager of choice (npm, pnpm, or yarn)
+
+<Note>
+  Starting fresh? Follow the [Quickstart](/quickstart) guide instead to create a new project with Starlight pre-configured.
+</Note>
+
+## Installation
+
+<Steps>
+  <Step title="Add the Starlight integration">
+    Starlight is an [Astro integration](https://docs.astro.build/en/guides/integrations-guide/). Add it to your site by running the `astro add` command in your project's root directory:
+    
+    <CodeGroup>
+      ```bash npm
+      npx astro add starlight
+      ```
+      
+      ```bash pnpm
+      pnpm astro add starlight
+      ```
+      
+      ```bash yarn
+      yarn astro add starlight
+      ```
+    </CodeGroup>
+    
+    This command will:
+    - Install `@astrojs/starlight` and all required dependencies
+    - Add Starlight to the `integrations` array in your `astro.config.mjs`
+    - Prompt you to make any necessary configuration changes
+  </Step>
+  
+  <Step title="Configure the integration">
+    The Starlight integration is configured in your `astro.config.mjs` file. At minimum, you need to add a `title`:
+    
+    ```js {8}
+    // astro.config.mjs
+    import { defineConfig } from 'astro/config';
+    import starlight from '@astrojs/starlight';
+    
+    export default defineConfig({
+      integrations: [
+        starlight({
+          title: 'My Delightful Docs',
+        }),
+      ],
+    });
+    ```
+  </Step>
+</Steps>
+
+### Configuration Options
+
+Starlight supports many configuration options to customize your documentation site. Here are some common ones:
+
+```js
+// astro.config.mjs
+import { defineConfig } from 'astro/config';
+import starlight from '@astrojs/starlight';
+
+export default defineConfig({
+  integrations: [
+    starlight({
+      title: 'My Docs',
+      description: 'My awesome documentation site',
+      logo: {
+        src: './src/assets/logo.svg',
+      },
+      social: {
+        github: 'https://github.com/yourusername/yourproject',
+        twitter: 'https://twitter.com/yourhandle',
+      },
+      sidebar: [
+        {
+          label: 'Guides',
+          items: [
+            { label: 'Getting Started', slug: 'guides/getting-started' },
+            { label: 'Advanced', slug: 'guides/advanced' },
+          ],
+        },
+        {
+          label: 'Reference',
+          autogenerate: { directory: 'reference' },
+        },
+      ],
+      editLink: {
+        baseUrl: 'https://github.com/yourusername/yourproject/edit/main/',
+      },
+    }),
+  ],
+});
+```
+
+<Warning>
+  The `title` configuration option is required. Starlight will throw an error if it's not provided.
+</Warning>
+
+## Configure Content Collections
+
+Starlight is built on top of Astro's [content collections](https://docs.astro.build/en/guides/content-collections/), which are configured in the `src/content.config.ts` file.
+
+<Steps>
+  <Step title="Create or update the content config">
+    Create or update the content config file at `src/content.config.ts`, adding a `docs` collection that uses Starlight's `docsLoader` and `docsSchema`:
+    
+    ```js {3-4,7}
+    // src/content.config.ts
+    import { defineCollection } from 'astro:content';
+    import { docsLoader } from '@astrojs/starlight/loaders';
+    import { docsSchema } from '@astrojs/starlight/schema';
+    
+    export const collections = {
+      docs: defineCollection({ loader: docsLoader(), schema: docsSchema() }),
+    };
+    ```
+  </Step>
+  
+  <Step title="Legacy collections support (optional)">
+    If you have an existing Astro project using the legacy content collections implementation, Starlight also supports the [`legacy.collections` flag](https://docs.astro.build/en/reference/legacy-flags/):
+    
+    ```js
+    // astro.config.mjs
+    export default defineConfig({
+      legacy: {
+        collections: true,
+      },
+      // ... rest of config
+    });
+    ```
+    
+    This is useful if you're unable to migrate to the new loader-based collections API immediately.
+  </Step>
+</Steps>
+
+## Add Content
+
+With Starlight configured, it's time to add your documentation content.
+
+<Steps>
+  <Step title="Create the docs directory">
+    Create a `src/content/docs/` directory if it doesn't already exist:
+    
+    ```bash
+    mkdir -p src/content/docs
+    ```
+  </Step>
+  
+  <Step title="Add an index page">
+    Create an `index.md` file at `src/content/docs/index.md`. This will be the homepage of your documentation:
+    
+    ```md
+    ---
+    title: My Documentation
+    description: Welcome to my project documentation built with Starlight.
+    ---
+    
+    Welcome to my project!
+    
+    ## Getting Started
+    
+    This is your documentation homepage. Add more content here to introduce your project.
+    ```
+  </Step>
+  
+  <Step title="Add more pages">
+    Starlight uses file-based routing. Every Markdown, MDX, or Markdoc file in `src/content/docs/` becomes a page on your site.
+    
+    For example, create `src/content/docs/guides/getting-started.md`:
+    
+    ```md
+    ---
+    title: Getting Started
+    description: Learn how to get started with this project.
+    ---
+    
+    This guide will help you get up and running.
+    ```
+    
+    This page will be accessible at `/guides/getting-started`.
+  </Step>
+</Steps>
+
+### Frontmatter
+
+Frontmatter metadata (the `title` and `description` fields in the examples above) controls how each page is displayed. Here are some common frontmatter options:
+
+```md
+---
+title: Page Title              # Required: appears in navigation and browser tab
+description: Page description  # Recommended: used for SEO meta tags
+sidebar:
+  label: Custom Label          # Optional: override the sidebar link text
+  order: 1                     # Optional: control sidebar ordering
+  badge: New                   # Optional: add a badge to the sidebar link
+tableOfContents:
+  minHeadingLevel: 2           # Optional: minimum heading level to show
+  maxHeadingLevel: 4           # Optional: maximum heading level to show
+---
+```
+
+See the [frontmatter reference](/reference/frontmatter) for all available options.
+
+## Advanced Setup Options
+
+### Use Starlight at a Subpath
+
+To add all Starlight pages at a specific subpath (e.g., `/docs/`), place your documentation content inside a subdirectory of `src/content/docs/`.
+
+For example, if all Starlight pages should start with `/guides/`, add your content in the `src/content/docs/guides/` directory:
+
+```
+my-project/
+├── src/
+│   ├── content/
+│   │   └── docs/
+│   │       └── guides/              # All docs under /guides/
+│   │           ├── index.md         # Becomes /guides/
+│   │           └── getting-started.md  # Becomes /guides/getting-started
+│   └── pages/
+│       └── index.astro              # Your main homepage at /
+└── astro.config.mjs
+```
+
+<Note>
+  Future versions of Starlight plan to support this use case better without requiring the extra nested directory.
+</Note>
+
+### Use Starlight with SSR
+
+By default, Starlight generates static HTML pages (SSG). If you need server-side rendering (SSR), you can enable it using an Astro adapter.
+
+<Steps>
+  <Step title="Add an adapter">
+    Follow the [On-demand Rendering Adapters](https://docs.astro.build/en/guides/on-demand-rendering/) guide in Astro's documentation to add a server adapter. For example, to use Vercel:
+    
+    ```bash
+    npx astro add vercel
+    ```
+  </Step>
+  
+  <Step title="Configure Starlight prerendering">
+    By default, Starlight pages are pre-rendered even in SSR mode. To disable pre-rendering for your Starlight pages, set the `prerender` config option to `false`:
+    
+    ```js {8}
+    // astro.config.mjs
+    export default defineConfig({
+      output: 'server',
+      adapter: vercel(),
+      integrations: [
+        starlight({
+          title: 'My Docs',
+          prerender: false,
+        }),
+      ],
+    });
+    ```
+  </Step>
+</Steps>
+
+### Multiple Content Collections
+
+If you need multiple content collections in addition to the Starlight `docs` collection, you can add them to your `src/content.config.ts`:
+
+```js
+// src/content.config.ts
+import { defineCollection } from 'astro:content';
+import { docsLoader } from '@astrojs/starlight/loaders';
+import { docsSchema } from '@astrojs/starlight/schema';
+
+export const collections = {
+  // Starlight docs collection
+  docs: defineCollection({ 
+    loader: docsLoader(), 
+    schema: docsSchema() 
+  }),
+  
+  // Your custom collections
+  blog: defineCollection({
+    // Your blog schema
+  }),
+  authors: defineCollection({
+    // Your authors schema
+  }),
+};
+```
+
+## Verify Your Setup
+
+After completing the manual setup, verify everything works correctly:
+
+<Steps>
+  <Step title="Start the dev server">
+    <CodeGroup>
+      ```bash npm
+      npm run dev
+      ```
+      
+      ```bash pnpm
+      pnpm dev
+      ```
+      
+      ```bash yarn
+      yarn dev
+      ```
+    </CodeGroup>
+  </Step>
+  
+  <Step title="Check your documentation">
+    Open your browser and navigate to the local development URL (usually `http://localhost:4321`). You should see:
+    
+    - Your homepage at the root URL
+    - Starlight's navigation and sidebar
+    - Your documentation pages
+    - Working search functionality
+    - Dark mode toggle
+  </Step>
+</Steps>
+
+## Next Steps
+
+Your Starlight integration is now set up! Here's what to explore next:
+
+<CardGroup cols={2}>
+  <Card title="Project Structure" icon="folder" href="/guides/project-structure">
+    Understand how to organize your documentation files.
+  </Card>
+  
+  <Card title="Sidebar Navigation" icon="bars" href="/guides/sidebar">
+    Configure and customize your sidebar navigation.
+  </Card>
+  
+  <Card title="Customization" icon="paint-brush" href="/guides/customization">
+    Customize colors, fonts, and more to match your brand.
+  </Card>
+  
+  <Card title="Components" icon="cube" href="/components">
+    Learn about built-in components to enhance your docs.
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+### Build Errors
+
+If you encounter errors during the build:
+
+1. **Check Astro version**: Starlight requires Astro 5.5.0 or higher
+   ```bash
+   npm list astro
+   ```
+
+2. **Verify content collections**: Ensure `src/content.config.ts` is properly configured
+
+3. **Check frontmatter**: Make sure all documentation pages have a `title` in their frontmatter
+
+### Missing Styles or Scripts
+
+If Starlight's styles or scripts aren't loading:
+
+1. **Clear the cache**: Delete `.astro` and `node_modules/.astro` directories
+2. **Reinstall dependencies**: Run `npm install` (or your package manager equivalent)
+3. **Restart dev server**: Stop and restart your development server
+
+### Getting Help
+
+If you're still having issues:
+
+- Check the [full Astro documentation](https://docs.astro.build) for Astro-specific questions
+- Visit the [Starlight GitHub issues](https://github.com/withastro/starlight/issues) to see if others have encountered the same problem
+- Join the [Astro Discord](https://astro.build/chat/) and ask in the `#starlight` channel

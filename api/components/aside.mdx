@@ -1,0 +1,69 @@
+---
+title: Aside
+description: API reference for the Aside component used to display auxiliary information alongside the main content.
+---
+
+The `<Aside>` component displays auxiliary information in a visually distinct callout box. It supports different types (note, tip, caution, danger) with corresponding icons and styling.
+
+## Import
+
+```tsx
+import { Aside } from '@astrojs/starlight/components';
+```
+
+## Props
+
+<ParamField path="type" type="'note' | 'tip' | 'caution' | 'danger'" default="'note'">
+  The variant of the aside, which determines its color scheme and default icon.
+  
+  - `note` - Blue theme with information icon
+  - `tip` - Purple theme with rocket icon
+  - `caution` - Orange theme with warning icon
+  - `danger` - Red theme with error icon
+</ParamField>
+
+<ParamField path="title" type="string">
+  Optional custom title for the aside. If not provided, defaults to a localized version based on the `type` prop.
+</ParamField>
+
+<ParamField path="icon" type="StarlightIcon">
+  Optional custom icon to display instead of the default icon for the aside type. Must be a valid icon name from Starlight's icon set.
+</ParamField>
+
+## Usage
+
+### Basic aside
+
+```mdx
+<Aside>
+  This is a default note aside with default styling.
+</Aside>
+```
+
+### Different types
+
+```mdx
+<Aside type="tip">
+  Here's a helpful tip for your users!
+</Aside>
+
+<Aside type="caution">
+  Be careful when using this feature.
+</Aside>
+
+<Aside type="danger">
+  This action cannot be undone!
+</Aside>
+```
+
+### Custom title and icon
+
+```mdx
+<Aside type="note" title="Custom Title" icon="star">
+  This aside has a custom title and icon.
+</Aside>
+```
+
+## Children
+
+The component accepts any MDX content as children, which will be rendered inside the aside's content area.

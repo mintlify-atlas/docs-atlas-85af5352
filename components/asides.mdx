@@ -1,0 +1,132 @@
+---
+title: Asides
+description: Learn how to use asides in Starlight to display secondary information alongside a page's main content.
+---
+
+
+To display secondary information alongside a page's main content, use the `<Aside>` component. Asides (also known as "admonitions" or "callouts") are useful for displaying supplementary information without interrupting the main content flow.
+
+## Import
+
+```tsx
+```
+
+## Usage
+
+Display an aside using the `<Aside>` component. An `<Aside>` can have an optional `type` attribute which controls the aside's color, icon, and default title.
+
+```mdx
+
+<Aside>Default note aside with blue styling.</Aside>
+
+<Aside type="tip">Helpful tip with purple styling and a rocket icon.</Aside>
+
+<Aside type="caution">Warning message with yellow styling.</Aside>
+
+<Aside type="danger">Danger notice with red styling.</Aside>
+```
+
+### Aside Types
+
+The `type` prop controls the appearance and default behavior:
+
+- **`note`** (default) - Blue color with an information icon
+- **`tip`** - Purple color with a rocket icon  
+- **`caution`** - Yellow/orange color with a warning triangle icon
+- **`danger`** - Red color with an octagonal warning icon
+
+### Custom Titles
+
+Override the default aside title using the `title` attribute:
+
+```mdx
+
+<Aside type="caution" title="Watch out!">
+  A warning aside with a custom title.
+</Aside>
+```
+
+### Custom Icons
+
+Override the default aside icon using the `icon` attribute set to the name of one of Starlight's built-in icons:
+
+```mdx
+
+<Aside type="tip" icon="starlight">
+  A tip aside with a custom Starlight icon.
+</Aside>
+```
+
+### Nested Content
+
+Asides support all Markdown content including code blocks, lists, and other components:
+
+```mdx
+<Aside type="tip">
+  Other content is also supported in asides including code blocks, lists, and other components.
+</Aside>
+```
+
+## Markdown Syntax Alternative
+
+Starlight also provides a custom Markdown syntax for rendering asides without importing the component:
+
+```md
+:::note
+This is a note aside using Markdown syntax.
+:::
+
+:::tip[Custom Title]
+This tip has a custom title.
+:::
+```
+
+See the [Authoring Content guide](/guides/authoring-content/#asides) for more details.
+
+## Component API
+
+### `<Aside>` Props
+
+**Implementation:** [`Aside.astro`](https://github.com/withastro/starlight/blob/main/packages/starlight/user-components/Aside.astro)
+
+#### `type`
+
+**Type:** `'note' | 'tip' | 'caution' | 'danger'`  
+**Default:** `'note'`
+
+The type of aside to display:
+- `note` - Blue with information icon
+- `tip` - Purple with rocket icon  
+- `caution` - Yellow with warning triangle
+- `danger` - Red with octagonal warning
+
+#### `title`
+
+**Type:** `string`  
+**Default:** Localized default based on `type`
+
+The title of the aside. If not provided, a default localized title based on the aside type will be used.
+
+#### `icon`
+
+**Type:** `StarlightIcon`
+
+Custom icon to display instead of the default icon for the aside type. Must be the name of one of Starlight's built-in icons.
+
+## Implementation Details
+
+The `<Aside>` component from `Aside.astro:1`:
+
+```typescript
+interface Props {
+  type?: 'note' | 'tip' | 'caution' | 'danger';
+  title?: string;
+  icon?: StarlightIcon;
+}
+```
+
+Default icons for each type are defined as:
+- `note` → `'information'`
+- `tip` → `'rocket'`
+- `caution` → `'warning'`  
+- `danger` → `'error'`

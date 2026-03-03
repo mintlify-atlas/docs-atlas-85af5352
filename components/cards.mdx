@@ -1,0 +1,168 @@
+---
+title: Cards
+description: Learn how to use cards in Starlight to display content in styled boxes with optional icons.
+---
+
+
+To display content in a box matching Starlight's styles, use the `<Card>` component. Cards are perfect for highlighting features, options, or related content in a visually distinct way.
+
+## Import
+
+```tsx
+```
+
+## Usage
+
+Display a card using the `<Card>` component with a required `title`:
+
+```mdx
+
+<Card title="Check this out">
+  Interesting content you want to highlight.
+</Card>
+```
+
+### Add Icons to Cards
+
+Include an icon in a card using the `icon` attribute set to the name of one of Starlight's built-in icons:
+
+```mdx
+
+<Card title="Stars" icon="star">
+  Sirius, Vega, Betelgeuse
+</Card>
+
+<Card title="Moons" icon="moon">
+  Io, Europa, Ganymede
+</Card>
+```
+
+### Card Colors
+
+Cards automatically cycle through different accent colors based on their position:
+- 1st, 5th, 9th... cards: Orange
+- 2nd, 6th, 10th... cards: Purple (default)
+- 3rd, 7th, 11th... cards: Green
+- 4th, 8th, 12th... cards: Red
+- Others: Blue
+
+This creates visual variety when displaying multiple cards.
+
+### Group Cards
+
+Display multiple cards side-by-side when there's enough space by grouping them using the `<CardGrid>` component:
+
+```mdx
+
+<CardGrid>
+  <Card title="Feature 1" icon="star">
+    Description of feature 1.
+  </Card>
+  
+  <Card title="Feature 2" icon="rocket">
+    Description of feature 2.
+  </Card>
+  
+  <Card title="Feature 3" icon="pencil">
+    Description of feature 3.
+  </Card>
+</CardGrid>
+```
+
+See the [CardGrid documentation](#cardgrid) for more details on grid layouts.
+
+## Component API
+
+### `<Card>` Props
+
+**Implementation:** [`Card.astro`](https://github.com/withastro/starlight/blob/main/packages/starlight/user-components/Card.astro)
+
+#### `title`
+
+**Type:** `string`  
+**Required:** Yes
+
+The title of the card to display. Supports inline HTML.
+
+#### `icon`
+
+**Type:** `StarlightIcon`
+
+A card can include an `icon` attribute set to the name of one of Starlight's built-in icons. The icon appears next to the title with a colored background and border.
+
+## CardGrid
+
+### Import
+
+```tsx
+```
+
+### Usage
+
+Wrap multiple `<Card>` components in a `<CardGrid>` to group them:
+
+```mdx
+
+<CardGrid>
+  <Card title="First Card" icon="star">
+    Content for the first card.
+  </Card>
+  <Card title="Second Card" icon="moon">
+    Content for the second card.
+  </Card>
+</CardGrid>
+```
+
+### Staggered Layout
+
+Create a staggered visual effect on larger screens using the `stagger` prop:
+
+```mdx
+
+<CardGrid stagger>
+  <Card title="Feature A" icon="star">
+    First feature description.
+  </Card>
+  <Card title="Feature B" icon="rocket">
+    Second feature description.
+  </Card>
+</CardGrid>
+```
+
+With `stagger` enabled, every second card is shifted vertically on screens 50rem (800px) or wider.
+
+### `<CardGrid>` Props
+
+**Implementation:** [`CardGrid.astro`](https://github.com/withastro/starlight/blob/main/packages/starlight/user-components/CardGrid.astro)
+
+#### `stagger`
+
+**Type:** `boolean`  
+**Default:** `false`
+
+Whether to stagger the cards vertically on larger screens for a more dynamic layout.
+
+## Implementation Details
+
+The `<Card>` component from `Card.astro:1`:
+
+```typescript
+interface Props {
+  icon?: StarlightIcon;
+  title: string;
+}
+```
+
+The `<CardGrid>` component from `CardGrid.astro:1`:
+
+```typescript
+interface Props {
+  stagger?: boolean;
+}
+```
+
+### Responsive Behavior
+
+- **Mobile (< 50rem):** Cards stack vertically in a single column
+- **Desktop (≥ 50rem):** Cards display in a 2-column grid with 1.5rem gap
+- **Stagger effect:** Only applies on desktop breakpoint when `stagger={true}`

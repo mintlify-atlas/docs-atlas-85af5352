@@ -1,0 +1,275 @@
+---
+title: DocSearch Plugin
+description: Integrate Algolia DocSearch into your Starlight site for powerful, hosted search functionality.
+---
+
+The `@astrojs/starlight-docsearch` plugin integrates [Algolia DocSearch](https://docsearch.algolia.com/) into your Starlight documentation site, replacing the default Pagefind search with Algolia's hosted search service.
+
+## Installation
+
+Install the DocSearch plugin package:
+
+
+<Tabs>
+<TabItem label="npm">
+
+```sh
+npm install @astrojs/starlight-docsearch
+```
+
+</TabItem>
+<TabItem label="pnpm">
+
+```sh
+pnpm add @astrojs/starlight-docsearch
+```
+
+</TabItem>
+<TabItem label="Yarn">
+
+```sh
+yarn add @astrojs/starlight-docsearch
+```
+
+</TabItem>
+</Tabs>
+
+## Configuration
+
+### Basic Setup
+
+Add the plugin to your Starlight configuration with your Algolia credentials:
+
+```js title="astro.config.mjs" ins={3,9-14}
+import { defineConfig } from 'astro/config';
+import starlight from '@astrojs/starlight';
+import starlightDocSearch from '@astrojs/starlight-docsearch';
+
+export default defineConfig({
+  integrations: [
+    starlight({
+      title: 'My Docs',
+      plugins: [
+        starlightDocSearch({
+          appId: 'YOUR_APP_ID',
+          apiKey: 'YOUR_SEARCH_API_KEY',
+          indexName: 'YOUR_INDEX_NAME',
+        }),
+      ],
+    }),
+  ],
+});
+```
+
+### Getting Algolia Credentials
+
+To use DocSearch, you'll need:
+
+- **`appId`**: Your Algolia application ID
+- **`apiKey`**: Your Algolia Search API key (search-only, public)
+- **`indexName`**: Your Algolia index name
+
+If you don't have these yet, [apply for the DocSearch program](https://docsearch.algolia.com/apply/) or create an Algolia account and configure your own crawler.
+
+## Configuration Options
+
+The plugin accepts the following options from `packages/docsearch/index.ts:16-88`:
+
+### Required Options
+
+#### `appId`
+
+Type: `string`
+
+Your Algolia application ID.
+
+#### `apiKey`
+
+Type: `string`
+
+Your Algolia Search API key (public, search-only key).
+
+#### `indexName`
+
+Type: `string`
+
+The name of your Algolia index.
+
+### Optional Options
+
+#### `maxResultsPerGroup`
+
+Type: `number`  
+Default: `5`
+
+The maximum number of results to display per search group.
+
+```js title="astro.config.mjs"
+starlightDocSearch({
+  appId: 'YOUR_APP_ID',
+  apiKey: 'YOUR_API_KEY',
+  indexName: 'YOUR_INDEX_NAME',
+  maxResultsPerGroup: 10,
+})
+```
+
+#### `disableUserPersonalization`
+
+Type: `boolean`  
+Default: `false`
+
+Disable saving recent searches and favorites to local storage.
+
+```js title="astro.config.mjs"
+starlightDocSearch({
+  appId: 'YOUR_APP_ID',
+  apiKey: 'YOUR_API_KEY',
+  indexName: 'YOUR_INDEX_NAME',
+  disableUserPersonalization: true,
+})
+```
+
+#### `insights`
+
+Type: `boolean`  
+Default: `false`
+
+Enable the Algolia Insights plugin to send search events to your index for analytics.
+
+```js title="astro.config.mjs"
+starlightDocSearch({
+  appId: 'YOUR_APP_ID',
+  apiKey: 'YOUR_API_KEY',
+  indexName: 'YOUR_INDEX_NAME',
+  insights: true,
+})
+```
+
+#### `searchParameters`
+
+Type: `SearchParameters`
+
+Algolia Search API parameters to customize search behavior.
+
+See [Algolia's Search Parameters documentation](https://www.algolia.com/doc/api-reference/search-api-parameters/) for all available options.
+
+```js title="astro.config.mjs"
+starlightDocSearch({
+  appId: 'YOUR_APP_ID',
+  apiKey: 'YOUR_API_KEY',
+  indexName: 'YOUR_INDEX_NAME',
+  searchParameters: {
+    facetFilters: ['version:1.0'],
+  },
+})
+```
+
+### Advanced Configuration
+
+#### `clientOptionsModule`
+
+Type: `string`
+
+Path to a JavaScript or TypeScript file that exports DocSearch client options. Use this when you need non-serializable options like `transformSearchClient` or `resultsFooterComponent`.
+
+When using `clientOptionsModule`, all options must be set in the module file. Inline options in `astro.config.mjs` will be ignored.
+
+```js title="astro.config.mjs"
+starlightDocSearch({
+  clientOptionsModule: './src/config/docsearch.ts',
+})
+```
+
+```ts title="src/config/docsearch.ts"
+import type { DocSearchClientOptions } from '@astrojs/starlight-docsearch';
+
+export default {
+  appId: 'YOUR_APP_ID',
+  apiKey: 'YOUR_API_KEY',
+  indexName: 'YOUR_INDEX_NAME',
+  transformSearchClient(searchClient) {
+    // Customize the search client
+    return searchClient;
+  },
+  getMissingResultsUrl({ query }) {
+    return `https://github.com/myorg/myrepo/issues/new?title=${query}`;
+  },
+} satisfies DocSearchClientOptions;
+```
+
+## How It Works
+
+From `packages/docsearch/index.ts:98-134`, the plugin:
+
+1. **Disables Pagefind**: Sets `pagefind: false` in Starlight config
+2. **Overrides Search Component**: Replaces the default Search component with `DocSearch.astro`
+3. **Injects Configuration**: Uses a Vite plugin to expose DocSearch config via a virtual module
+4. **Adds Dependencies**: Includes `@docsearch/js` and `@docsearch/css`
+
+## Component Override Detection
+
+The plugin checks if you've already customized the Search component and warns you:
+
+```ts title="packages/docsearch/index.ts:100-106"
+if (config.components?.Search) {
+  logger.warn(
+    'It looks like you already have a `Search` component override in your Starlight configuration.'
+  );
+  logger.warn(
+    'To render `@astrojs/starlight-docsearch`, remove the override for the `Search` component.\n'
+  );
+}
+```
+
+## Styling
+
+The plugin includes DocSearch's default CSS. You can customize the appearance using CSS custom properties:
+
+```css title="src/styles/custom.css"
+:root {
+  --docsearch-primary-color: #5468ff;
+  --docsearch-text-color: #1c1e21;
+  --docsearch-spacing: 12px;
+  --docsearch-icon-stroke-width: 1.4;
+}
+```
+
+See [DocSearch's styling documentation](https://docsearch.algolia.com/docs/styling/) for all available CSS variables.
+
+## Migration from Pagefind
+
+When switching from Pagefind to DocSearch:
+
+1. The search UI will change to DocSearch's interface
+2. Search is powered by Algolia instead of being built at compile time
+3. You'll need to set up and maintain an Algolia crawler
+4. Search will work immediately without rebuilding your site
+
+## Troubleshooting
+
+### Search not appearing
+
+- Ensure you've removed any custom `Search` component overrides
+- Verify your Algolia credentials are correct
+- Check that the plugin is properly installed
+
+### No search results
+
+- Verify your Algolia index contains documents
+- Check your `indexName` matches your Algolia index
+- Ensure your crawler is properly configured and has run
+
+### TypeScript errors
+
+The plugin includes TypeScript definitions. Import the type for client options:
+
+```ts
+import type { DocSearchClientOptions } from '@astrojs/starlight-docsearch';
+```
+
+## Resources
+
+- [Algolia DocSearch Documentation](https://docsearch.algolia.com/)
+- [Apply for DocSearch Program](https://docsearch.algolia.com/apply/)
+- [Algolia Search API Reference](https://www.algolia.com/doc/api-reference/search-api-parameters/)
+- [DocSearch Styling Guide](https://docsearch.algolia.com/docs/styling/)

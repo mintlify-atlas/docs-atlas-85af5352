@@ -1,0 +1,448 @@
+---
+title: Plugin API
+description: API reference for creating Starlight plugins to extend functionality.
+---
+
+Starlight plugins allow you to extend and customize Starlight's behavior. This page documents the plugin interface, available hooks, and utilities.
+
+## StarlightPlugin Interface
+
+Plugins are objects that conform to the `StarlightPlugin` interface:
+
+```ts
+interface StarlightPlugin {
+  name: string;
+  hooks: {
+    'i18n:setup'?: (context: I18nSetupContext) => void | Promise<void>;
+    'config:setup'?: (context: ConfigSetupContext) => void | Promise<void>;
+    setup?: (context: ConfigSetupContext) => void | Promise<void>; // Deprecated
+  };
+}
+```
+
+### `name`
+
+Type: `string`  
+**Required**
+
+The name of your plugin. Used in error messages and logger output.
+
+```ts
+export default function myPlugin() {
+  return {
+    name: 'my-starlight-plugin',
+    hooks: {
+      // ...
+    },
+  };
+}
+```
+
+### `hooks`
+
+Type: `object`  
+**Required**
+
+An object containing lifecycle hooks. At least one of `config:setup` or the deprecated `setup` hook must be defined.
+
+## Hooks
+
+### `i18n:setup`
+
+Type: `(context: I18nSetupContext) => void | Promise<void>`  
+Optional
+
+Called during plugin initialization to set up internationalization. Use this hook to inject custom translation strings for your plugin's UI.
+
+#### Context Parameters
+
+```ts
+interface I18nSetupContext {
+  injectTranslations: (translations: Record<string, Record<string, string>>) => void;
+}
+```
+
+##### `injectTranslations()`
+
+Injects translation strings for one or more locales.
+
+**Parameters:**
+- `translations` - An object mapping locale codes to translation dictionaries
+
+**Example:**
+
+```ts
+export default function myPlugin() {
+  return {
+    name: 'my-plugin',
+    hooks: {
+      'i18n:setup'({ injectTranslations }) {
+        injectTranslations({
+          en: {
+            'myPlugin.doThing': 'Do the thing',
+            'myPlugin.label': 'My Feature',
+          },
+          fr: {
+            'myPlugin.doThing': 'Faire le truc',
+            'myPlugin.label': 'Ma fonctionnalité',
+          },
+        });
+      },
+    },
+  };
+}
+```
+
+### `config:setup`
+
+Type: `(context: ConfigSetupContext) => void | Promise<void>`  
+Optional (but required if `setup` is not defined)
+
+Called during configuration setup. This is the main hook for modifying Starlight's configuration, adding integrations, and accessing utilities.
+
+#### Context Parameters
+
+```ts
+interface ConfigSetupContext {
+  config: StarlightUserConfig & { plugins?: StarlightPlugin[] };
+  updateConfig: (newConfig: Partial<StarlightUserConfig>) => void;
+  addIntegration: (integration: AstroIntegration) => void;
+  addRouteMiddleware: (config: RouteMiddlewareConfig) => void;
+  astroConfig: AstroConfig;
+  command: 'dev' | 'build' | 'preview';
+  isRestart: boolean;
+  logger: AstroIntegrationLogger;
+  useTranslations: (lang: string) => (key: string) => string;
+  absolutePathToLang: (path: string) => string;
+}
+```
+
+##### `config`
+
+A read-only copy of the user-supplied Starlight configuration. Note that this may have been modified by plugins that ran before yours.
+
+##### `updateConfig()`
+
+Updates the Starlight configuration.
+
+**Parameters:**
+- `newConfig` - Partial configuration object with values to update
+
+**Restrictions:**
+- Cannot update the `plugins` property
+- Cannot update the `routeMiddleware` property (use `addRouteMiddleware()` instead)
+- No deep merge is performed; top-level properties are replaced
+
+**Example:**
+
+```ts
+'config:setup'({ updateConfig }) {
+  updateConfig({
+    description: 'Custom description from plugin',
+    customCss: ['./src/plugin-styles.css'],
+  });
+}
+```
+
+##### `addIntegration()`
+
+Adds an Astro integration to the project.
+
+**Parameters:**
+- `integration` - An Astro integration object
+
+**Example:**
+
+```ts
+'config:setup'({ addIntegration }) {
+  addIntegration({
+    name: 'my-plugin-integration',
+    hooks: {
+      'astro:config:setup': ({ updateConfig }) => {
+        // Modify Astro config
+      },
+    },
+  });
+}
+```
+
+##### `addRouteMiddleware()`
+
+Registers additional route middleware handlers.
+
+**Parameters:**
+```ts
+interface RouteMiddlewareConfig {
+  entrypoint: string;
+  order?: 'pre' | 'post' | 'default'; // Default: 'default'
+}
+```
+
+- `entrypoint` - Path to the middleware module
+- `order` - Controls execution order:
+  - `'pre'` - Run before default middlewares
+  - `'default'` - Run with other default middlewares
+  - `'post'` - Run after default middlewares
+
+**Example:**
+
+```ts
+'config:setup'({ addRouteMiddleware }) {
+  addRouteMiddleware({
+    entrypoint: '@me/my-plugin/route-middleware',
+    order: 'pre',
+  });
+}
+```
+
+##### `astroConfig`
+
+A read-only copy of the user-supplied Astro configuration. Note that this is resolved before other integrations have run.
+
+##### `command`
+
+Type: `'dev' | 'build' | 'preview'`
+
+The command used to run Starlight.
+
+##### `isRestart`
+
+Type: `boolean`
+
+`false` when the dev server starts, `true` when a reload is triggered.
+
+##### `logger`
+
+Type: `AstroIntegrationLogger`
+
+An instance of the Astro integration logger. All logged messages are automatically prefixed with your plugin name.
+
+**Example:**
+
+```ts
+'config:setup'({ logger }) {
+  logger.info('Plugin initialized');
+  logger.warn('This is a warning');
+  logger.error('This is an error');
+}
+```
+
+##### `useTranslations()`
+
+Generates a utility function to access UI strings for a given language.
+
+**Parameters:**
+- `lang` - BCP-47 language tag (e.g., `'en'`, `'fr'`, `'zh-CN'`)
+
+**Returns:**
+- A function that takes a translation key and returns the translated string
+
+**Example:**
+
+```ts
+'config:setup'({ useTranslations, logger }) {
+  const t = useTranslations('en');
+  logger.info(t('builtWithStarlight.label'));
+  // Logs: 'Built with Starlight'
+}
+```
+
+##### `absolutePathToLang()`
+
+Gets the language for a given absolute file path. Useful in remark or rehype plugins to determine the language of the current file being processed.
+
+**Parameters:**
+- `path` - Absolute file path
+
+**Returns:**
+- BCP-47 language tag string
+
+**Example:**
+
+```ts
+'config:setup'({ absolutePathToLang, useTranslations }) {
+  const lang = absolutePathToLang(
+    '/absolute/path/to/project/src/content/docs/fr/index.mdx'
+  );
+  const t = useTranslations(lang);
+  // Returns French translations
+}
+```
+
+### `setup` (Deprecated)
+
+Type: `(context: ConfigSetupContext) => void | Promise<void>`  
+**Deprecated** - Use `config:setup` instead
+
+The legacy setup hook. Has the same signature and behavior as `config:setup` but will be removed in a future version.
+
+**Important:**
+- A plugin cannot define both `config:setup` and `setup` hooks
+- New plugins should use `config:setup`
+- Existing plugins using `setup` should migrate to `config:setup`
+
+## Type Definitions
+
+### `HookParameters<Hook>`
+
+Utility type to extract parameter types for a specific hook.
+
+```ts
+type HookParameters<
+  Hook extends keyof StarlightPlugin['hooks']
+> = Parameters<StarlightPlugin['hooks'][Hook]>[0];
+
+// Usage
+type ConfigSetupParams = HookParameters<'config:setup'>;
+type I18nSetupParams = HookParameters<'i18n:setup'>;
+```
+
+## Plugin Validation
+
+Plugins are validated using a Zod schema. The following rules are enforced:
+
+1. **Required `name` property** - Must be a non-empty string
+2. **At least one hook required** - Must define either `config:setup` or `setup`
+3. **No duplicate hooks** - Cannot define both `config:setup` and `setup`
+4. **Valid hook signatures** - Hooks must match expected function signatures
+
+If validation fails, an `AstroError` is thrown with a descriptive message.
+
+## Plugin Execution Order
+
+Plugins are executed in the order they appear in the `plugins` array:
+
+1. All `i18n:setup` hooks run first, in order
+2. Then all `config:setup`/`setup` hooks run, in order
+3. Each plugin's hooks complete before the next plugin starts
+
+```js title="astro.config.mjs"
+starlight({
+  title: 'My Docs',
+  plugins: [
+    pluginA(), // Runs first
+    pluginB(), // Runs second
+    pluginC(), // Runs third
+  ],
+});
+```
+
+## Best Practices
+
+### Naming Convention
+
+Use descriptive plugin names with a consistent prefix:
+
+```ts
+export default function starlightMyFeature() {
+  return {
+    name: 'starlight-my-feature',
+    // ...
+  };
+}
+```
+
+### Translation Keys
+
+Namespace your translation keys to avoid conflicts:
+
+```ts
+injectTranslations({
+  en: {
+    'myPlugin.action': 'Click here',
+    'myPlugin.label': 'Feature Name',
+  },
+});
+```
+
+### Configuration Updates
+
+Only update configuration values that your plugin needs to change:
+
+```ts
+// Good - specific updates
+updateConfig({
+  customCss: ['./plugin-styles.css'],
+});
+
+// Avoid - unnecessary updates
+updateConfig({
+  title: config.title, // Unnecessary
+  customCss: ['./plugin-styles.css'],
+});
+```
+
+### Error Handling
+
+Use the logger to provide helpful error messages:
+
+```ts
+'config:setup'({ logger, config }) {
+  if (!config.social) {
+    logger.error(
+      'This plugin requires social links to be configured.'
+    );
+    throw new Error('Missing required configuration');
+  }
+}
+```
+
+## Example Plugin
+
+Here's a complete example of a Starlight plugin:
+
+```ts
+import type { StarlightPlugin } from '@astrojs/starlight/types';
+
+export default function starlightExample(): StarlightPlugin {
+  return {
+    name: 'starlight-example',
+    hooks: {
+      'i18n:setup'({ injectTranslations }) {
+        injectTranslations({
+          en: {
+            'example.greeting': 'Hello',
+          },
+          fr: {
+            'example.greeting': 'Bonjour',
+          },
+        });
+      },
+      'config:setup'({ 
+        config,
+        updateConfig,
+        addIntegration,
+        logger,
+        useTranslations 
+      }) {
+        logger.info('Setting up example plugin');
+
+        // Access translations
+        const t = useTranslations('en');
+        logger.info(t('example.greeting'));
+
+        // Update Starlight config
+        updateConfig({
+          customCss: ['./src/example-plugin.css'],
+        });
+
+        // Add an Astro integration
+        addIntegration({
+          name: 'example-integration',
+          hooks: {
+            'astro:config:setup': ({ updateConfig }) => {
+              // Custom Astro config updates
+            },
+          },
+        });
+      },
+    },
+  };
+}
+```
+
+## Source Locations
+
+- Plugin interface: `~/workspace/source/packages/starlight/utils/plugins.ts:359-430`
+- Plugin runner: `~/workspace/source/packages/starlight/utils/plugins.ts:20-136`
+- Type exports: `~/workspace/source/packages/starlight/types.ts:2-6`

@@ -1,0 +1,227 @@
+---
+title: Link Components
+description: Learn how to create prominent links using LinkButton and LinkCard components in Starlight.
+---
+
+
+Starlight provides two components for creating prominent, visually distinct links: `<LinkButton>` for call-to-action links and `<LinkCard>` for card-style navigation links.
+
+## LinkButton
+
+To display visually distinct call-to-action links, use the `<LinkButton>` component. Link buttons are useful for directing users to the most relevant or actionable content and are often used on landing pages.
+
+### Import
+
+```tsx
+```
+
+### Usage
+
+A `<LinkButton>` requires an `href` attribute. Optionally customize the appearance using the `variant` attribute:
+
+```mdx
+
+<LinkButton href="/getting-started/">Get started</LinkButton>
+
+<LinkButton href="/reference/" variant="secondary">
+  API Reference
+</LinkButton>
+
+<LinkButton href="/examples/" variant="minimal">
+  View examples
+</LinkButton>
+```
+
+### Add Icons to Link Buttons
+
+Include an icon using the `icon` attribute set to the name of one of Starlight's built-in icons. Use `iconPlacement` to control the icon position:
+
+```mdx
+
+<LinkButton 
+  href="https://github.com/" 
+  icon="external"
+  variant="secondary"
+>
+  View on GitHub
+</LinkButton>
+
+<LinkButton 
+  href="/next-steps/" 
+  icon="right-arrow"
+  iconPlacement="end"
+>
+  Continue reading
+</LinkButton>
+```
+
+### `<LinkButton>` Props
+
+**Implementation:** [`LinkButton.astro`](https://github.com/withastro/starlight/blob/main/packages/starlight/user-components/LinkButton.astro)
+
+The component accepts the following props plus any [other `<a>` attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a).
+
+#### `href`
+
+**Type:** `string | URL`  
+**Required:** Yes
+
+The URL that the link button points to.
+
+#### `variant`
+
+**Type:** `'primary' | 'secondary' | 'minimal'`  
+**Default:** `'primary'`
+
+The appearance of the link button:
+- `primary` - Prominent button using theme accent color with colored background
+- `secondary` - Less prominent button with border and no background
+- `minimal` - Minimal styling with no border or background
+
+#### `icon`
+
+**Type:** `StarlightIcon`
+
+Icon name from Starlight's built-in icons to display alongside the text.
+
+#### `iconPlacement`
+
+**Type:** `'start' | 'end'`  
+**Default:** `'end'`
+
+Determines whether the icon appears before (`start`) or after (`end`) the link text.
+
+---
+
+## LinkCard
+
+To display links to different pages prominently as interactive cards, use the `<LinkCard>` component.
+
+### Import
+
+```tsx
+```
+
+### Usage
+
+A `<LinkCard>` requires a `title` and an `href` attribute:
+
+```mdx
+
+<LinkCard 
+  title="Authoring Content" 
+  href="/guides/authoring-content/" 
+/>
+```
+
+### Add Link Descriptions
+
+Add a short description using the `description` attribute:
+
+```mdx
+
+<LinkCard
+  title="Internationalization"
+  href="/guides/i18n/"
+  description="Configure Starlight to support multiple languages."
+/>
+```
+
+### Group Link Cards
+
+Display multiple link cards side-by-side using the `<CardGrid>` component:
+
+```mdx
+
+<CardGrid>
+  <LinkCard
+    title="Getting Started"
+    href="/getting-started/"
+    description="Learn how to start using Starlight."
+  />
+  <LinkCard
+    title="Configuration"
+    href="/reference/configuration/"
+    description="Configure your Starlight site."
+  />
+  <LinkCard
+    title="Components"
+    href="/components/"
+    description="Explore built-in components."
+  />
+</CardGrid>
+```
+
+### `<LinkCard>` Props
+
+**Implementation:** [`LinkCard.astro`](https://github.com/withastro/starlight/blob/main/packages/starlight/user-components/LinkCard.astro)
+
+The component accepts the following props plus any [other `<a>` attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a).
+
+#### `title`
+
+**Type:** `string`  
+**Required:** Yes
+
+The title of the link card to display.
+
+#### `href`
+
+**Type:** `string`  
+**Required:** Yes
+
+The URL to navigate to when the card is clicked.
+
+#### `description`
+
+**Type:** `string`
+
+An optional description to display below the title.
+
+## Implementation Details
+
+### LinkButton Component
+
+From `LinkButton.astro:1`:
+
+```typescript
+interface Props extends Omit<HTMLAttributes<'a'>, 'href'> {
+  href: string | URL;
+  icon?: StarlightIcon;
+  iconPlacement?: 'start' | 'end';
+  variant?: 'primary' | 'secondary' | 'minimal';
+}
+```
+
+Styling features:
+- Rounded pill shape (`border-radius: 999rem`)
+- Inline-flex layout with gap for icon spacing
+- Icon size fixed at `1.5rem`
+- Different styles per variant
+- Responsive font sizes (smaller on mobile)
+
+### LinkCard Component
+
+From `LinkCard.astro:1`:
+
+```typescript
+interface Props extends Omit<HTMLAttributes<'a'>, 'title'> {
+  title: string;
+  description?: string;
+}
+```
+
+Features:
+- Grid layout with auto-sized arrow icon
+- Border and shadow styling
+- Hover effects on background and border
+- Right arrow icon with RTL support (flips in right-to-left languages)
+- Clickable area spans entire card (using `::before` pseudo-element)
+
+### Accessibility
+
+Both components:
+- Support all standard link attributes (`target`, `rel`, etc.)
+- Maintain proper focus styles
+- Work with keyboard navigation
+- LinkCard uses stretched link pattern for full card clickability

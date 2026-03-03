@@ -1,0 +1,111 @@
+---
+title: Built-in Components Overview
+description: An overview of all built-in components available in Starlight for creating rich documentation.
+---
+
+
+Starlight provides a comprehensive set of built-in components for common documentation use cases. These components are available from the `@astrojs/starlight/components` package and can be used in both MDX and Markdoc files.
+
+## Available Components
+
+Starlight includes the following built-in components:
+
+<CardGrid>
+  <Card title="Asides" icon="information">
+    Display secondary information in callout boxes with different severity levels (note, tip, caution, danger).
+  </Card>
+  
+  <Card title="Cards" icon="puzzle">
+    Display content in styled boxes with optional icons, perfect for feature lists or categorized content.
+  </Card>
+  
+  <Card title="Tabs" icon="list-format">
+    Create tabbed interfaces to group equivalent information where users only need to see one option.
+  </Card>
+  
+  <Card title="Steps" icon="right-caret">
+    Style numbered lists as visual step-by-step guides with connected bullets.
+  </Card>
+  
+  <Card title="Code" icon="seti:javascript">
+    Render syntax-highlighted code from external sources like files, databases, or APIs.
+  </Card>
+  
+  <Card title="FileTree" icon="document">
+    Display directory structures with file icons and collapsible sub-directories.
+  </Card>
+  
+  <Card title="Icons" icon="star">
+    Display icons from Starlight's built-in icon set with customizable size and color.
+  </Card>
+  
+  <Card title="Badges" icon="approve-check">
+    Display small pieces of information like status or category labels.
+  </Card>
+  
+  <Card title="LinkButton" icon="right-arrow">
+    Create visually distinct call-to-action links for landing pages.
+  </Card>
+  
+  <Card title="LinkCard" icon="external">
+    Display links prominently as interactive cards with titles and descriptions.
+  </Card>
+</CardGrid>
+
+## Importing Components
+
+### In MDX Files
+
+Import components from `@astrojs/starlight/components` in your MDX files:
+
+```mdx
+
+<Aside type="tip">
+  This is a helpful tip!
+</Aside>
+```
+
+### In Markdoc Files
+
+With the Starlight Markdoc preset, components are available using the `{% %}` tag syntax without imports:
+
+```markdoc
+{% aside type="tip" %}
+This is a helpful tip!
+{% /aside %}
+```
+
+## Component Categories
+
+### Content Organization
+
+- **Cards & Card Grids** - Group and display related content
+- **Tabs** - Present alternative options or code examples
+- **Steps** - Guide users through sequential processes
+- **FileTree** - Show project structure and file organization
+
+### Information Highlighting
+
+- **Asides** - Draw attention to important information
+- **Badges** - Label and categorize content
+- **Code** - Display syntax-highlighted code snippets
+
+### Navigation & Actions
+
+- **LinkButton** - Create prominent call-to-action links
+- **LinkCard** - Display navigational links as cards
+
+### Visual Elements
+
+- **Icons** - Add visual indicators and decorative elements
+
+## Source Code
+
+All component implementations are available in the Starlight repository:
+
+- [User Components](https://github.com/withastro/starlight/tree/main/packages/starlight/user-components)
+- [Component Exports](https://github.com/withastro/starlight/blob/main/packages/starlight/components.ts)
+
+## Next Steps
+
+Explore individual component documentation to learn about their specific props and usage patterns. Each component page includes live examples and detailed API references.

@@ -1,0 +1,324 @@
+---
+title: Markdoc Preset Plugin
+description: Use Markdoc syntax to write content in your Starlight site with full access to Starlight components.
+---
+
+
+The `@astrojs/starlight-markdoc` preset configures [Markdoc](https://markdoc.dev/) to work seamlessly with Starlight, providing access to all Starlight components using Markdoc's tag and node syntax.
+
+## What is Markdoc?
+
+Markdoc is a Markdown-based authoring framework developed by Stripe. It extends Markdown with a custom syntax for tags and nodes, making it powerful for technical documentation.
+
+## Installation
+
+Markdoc requires both the Astro Markdoc integration and the Starlight preset:
+
+<Tabs>
+<TabItem label="npm">
+
+```sh
+npm install @astrojs/markdoc @astrojs/starlight-markdoc
+```
+
+</TabItem>
+<TabItem label="pnpm">
+
+```sh
+pnpm add @astrojs/markdoc @astrojs/starlight-markdoc
+```
+
+</TabItem>
+<TabItem label="Yarn">
+
+```sh
+yarn add @astrojs/markdoc @astrojs/starlight-markdoc
+```
+
+</TabItem>
+</Tabs>
+
+## Configuration
+
+Add both the Markdoc integration and Starlight preset to your Astro config:
+
+```js title="astro.config.mjs" ins={3-4,9,14}
+import { defineConfig } from 'astro/config';
+import starlight from '@astrojs/starlight';
+import markdoc from '@astrojs/markdoc';
+import starlightMarkdoc from '@astrojs/starlight-markdoc';
+
+export default defineConfig({
+  integrations: [
+    starlight({
+      title: 'My Docs',
+    }),
+    markdoc({
+      // Use the Starlight Markdoc preset
+      extends: [
+        starlightMarkdoc(),
+      ],
+    }),
+  ],
+});
+```
+
+## Starlight Components in Markdoc
+
+The preset from `packages/markdoc/index.mjs:16-292` maps Starlight components to Markdoc tags and nodes:
+
+### Asides
+
+Create callouts using the `{% aside %}` tag:
+
+```markdoc
+{% aside type="tip" title="Helpful Tip" %}
+This is a helpful tip for your users.
+{% /aside %}
+```
+
+Available types: `note`, `tip`, `caution`, `danger`
+
+### Badges
+
+Add badges using the `{% badge %}` tag:
+
+```markdoc
+{% badge text="New" variant="tip" /%}
+{% badge text="Deprecated" variant="caution" /%}
+```
+
+Available variants: `note`, `tip`, `danger`, `caution`, `success`  
+Available sizes: `small`, `medium`, `large`
+
+### Cards
+
+Create cards with the `{% card %}` and `{% cardgrid %}` tags:
+
+```markdoc
+{% cardgrid %}
+{% card title="Getting Started" icon="rocket" %}
+Learn the basics in our quickstart guide.
+{% /card %}
+
+{% card title="Advanced Topics" icon="puzzle" %}
+Dive deep into advanced features.
+{% /card %}
+{% /cardgrid %}
+```
+
+Stagger cards for visual variety:
+
+```markdoc
+{% cardgrid stagger=true %}
+  <!-- cards -->
+{% /cardgrid %}
+```
+
+### Code Blocks
+
+Markdoc automatically uses Starlight's code component for fenced code blocks. You can also use the explicit `{% code %}` tag:
+
+```markdoc
+{% code code="console.log('Hello!')" lang="js" title="example.js" /%}
+```
+
+Code block options from `packages/markdoc/index.mjs:130-190`:
+- `code` (required): The code content
+- `lang`: Language for syntax highlighting
+- `title`: Optional filename or title
+- `frame`: Frame style (`auto`, `code`, `terminal`, `none`)
+- `meta`: Expressive Code meta string
+- `wrap`: Whether to wrap long lines (boolean)
+
+### File Trees
+
+Display file structure using `{% filetree %}`:
+
+```markdoc
+{% filetree %}
+- src/
+  - components/
+    - Header.astro
+    - Footer.astro
+  - pages/
+    - index.astro
+{% /filetree %}
+```
+
+### Icons
+
+Render icons with `{% icon %}`:
+
+```markdoc
+{% icon name="star" color="goldenrod" /%}
+{% icon name="rocket" size="2rem" /%}
+```
+
+### Link Buttons
+
+Create prominent call-to-action links:
+
+```markdoc
+{% linkbutton href="/get-started/" %}Get Started{% /linkbutton %}
+{% linkbutton href="https://example.com" variant="secondary" icon="external" %}
+Learn More
+{% /linkbutton %}
+```
+
+Variants: `primary`, `secondary`, `minimal`  
+Icon placement: `start`, `end`
+
+### Link Cards
+
+Create linked cards with descriptions:
+
+```markdoc
+{% linkcard 
+  title="Documentation" 
+  href="/docs/" 
+  description="Learn how to use our platform"
+/%}
+```
+
+### Steps
+
+Create numbered step sequences:
+
+```markdoc
+{% steps %}
+1. First, install the package
+2. Then, configure your project
+3. Finally, run the dev server
+{% /steps %}
+```
+
+### Tabs
+
+Create tabbed content with `{% tabs %}` and `{% tabitem %}`:
+
+```markdoc
+{% tabs %}
+{% tabitem label="npm" %}
+npm install package
+{% /tabitem %}
+
+{% tabitem label="pnpm" %}
+pnpm add package
+{% /tabitem %}
+{% /tabs %}
+```
+
+Sync tabs across the page:
+
+```markdoc
+{% tabs syncKey="package-manager" %}
+  <!-- tab items -->
+{% /tabs %}
+```
+
+## Heading Links
+
+By default, the preset enables automatic heading links. Disable them if needed:
+
+```js title="astro.config.mjs" "headingLinks: false"
+markdoc({
+  extends: [
+    starlightMarkdoc({ headingLinks: false }),
+  ],
+})
+```
+
+From `packages/markdoc/index.mjs:298-312`, this is implemented by overriding the heading node.
+
+## Component Mapping
+
+The preset maps components from two sources:
+
+1. **Starlight components** (`@astrojs/starlight/components`): Core Starlight UI components
+2. **Markdoc-specific components** (`@astrojs/starlight-markdoc/components`): Components like `Code` and `Heading` that need Markdoc-specific handling
+
+## Tag Attributes
+
+Markdoc requires explicit attribute definitions. The preset defines attributes for each component based on their props:
+
+### Well-Known HTML Attributes
+
+Some components like `{% badge %}`, `{% linkbutton %}`, and `{% linkcard %}` support common HTML attributes (from `packages/markdoc/html.mjs`):
+
+- Standard attributes: `class`, `id`, `style`, `title`
+- Anchor attributes: `target`, `rel`, `download`, `ping`, `referrerpolicy`
+
+### Attribute Types
+
+From `packages/markdoc/index.mjs`, attributes use these Markdoc types:
+- `String`: Text values
+- `Number`: Numeric values
+- `Boolean`: True/false flags
+- `matches`: Enumerated values (e.g., `['note', 'tip', 'danger']`)
+
+## Limitations
+
+Some advanced features have limitations in Markdoc:
+
+### Code Markers
+
+Expressive Code markers like `mark`, `ins`, `del`, and label syntax aren't fully supported due to Markdoc's attribute validation. Use the `meta` attribute instead:
+
+```markdoc
+```js {% meta="ins={2} del={3}" %}
+function example() {
+  console.log('inserted line');
+  console.log('deleted line');
+}
+```
+```
+
+From `packages/markdoc/index.mjs:56-62` and `182-189`.
+
+### Icon Validation
+
+The preset doesn't validate icon names since it would require importing TypeScript files. Any string is accepted, but invalid icons won't render properly.
+
+From `packages/markdoc/index.mjs:7-9`.
+
+## Writing Content
+
+Create `.mdoc` files in your `src/content/docs/` directory:
+
+```text
+src/content/docs/
+├── index.mdoc
+├── getting-started.mdoc
+└── guides/
+    └── first-steps.mdoc
+```
+
+Markdoc files work just like `.md` or `.mdx` files in Starlight, with frontmatter for page metadata:
+
+```markdoc
+---
+title: My Page
+description: A page written in Markdoc
+---
+
+# Welcome
+
+{% aside type="tip" %}
+Markdoc is great for documentation!
+{% /aside %}
+```
+
+## Mixing Content Types
+
+You can use Markdown, MDX, and Markdoc files together in the same Starlight site. Each has different strengths:
+
+- **Markdown**: Simple, fast, widely compatible
+- **MDX**: JSX component support, full React ecosystem
+- **Markdoc**: Structured syntax, great for technical docs, easier to validate
+
+## Resources
+
+- [Markdoc Documentation](https://markdoc.dev/)
+- [Astro Markdoc Integration](https://docs.astro.build/en/guides/integrations-guide/markdoc/)
+- [Starlight Authoring Content Guide](https://starlight.astro.build/guides/authoring-content/#markdoc)

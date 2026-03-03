@@ -1,0 +1,294 @@
+---
+title: Creating Plugins
+description: Learn how to create custom Starlight plugins to extend your documentation site.
+---
+
+This guide shows you how to create your own Starlight plugin to extend and customize your documentation site.
+
+## Plugin Interface
+
+A Starlight plugin is defined by the `StarlightPlugin` interface located in `packages/starlight/utils/plugins.ts:436`:
+
+```ts
+export type StarlightPlugin = {
+  name: string;
+  hooks: {
+    'i18n:setup'?: (options: {
+      injectTranslations: (translations: Record<string, Record<string, string>>) => void;
+    }) => void | Promise<void>;
+    'config:setup': (options: {
+      config: StarlightUserConfig;
+      updateConfig: (newConfig: StarlightUserConfig) => void;
+      addIntegration: (integration: AstroIntegration) => void;
+      addRouteMiddleware: (config: { entrypoint: string; order?: 'pre' | 'post' | 'default' }) => void;
+      astroConfig: AstroConfig;
+      command: 'dev' | 'build' | 'preview';
+      isRestart: boolean;
+      logger: AstroIntegrationLogger;
+      useTranslations: (lang: string) => I18nT;
+      absolutePathToLang: (path: string) => string;
+    }) => void | Promise<void>;
+  };
+};
+```
+
+## Basic Plugin Example
+
+Here's a minimal plugin that logs a message during setup:
+
+```ts title="my-plugin.ts"
+import type { StarlightPlugin } from '@astrojs/starlight/types';
+
+export default function myPlugin(): StarlightPlugin {
+  return {
+    name: 'my-starlight-plugin',
+    hooks: {
+      'config:setup'({ logger }) {
+        logger.info('Plugin initialized!');
+      },
+    },
+  };
+}
+```
+
+Use it in your Starlight configuration:
+
+```js title="astro.config.mjs" ins={3,8}
+import { defineConfig } from 'astro/config';
+import starlight from '@astrojs/starlight';
+import myPlugin from './my-plugin';
+
+export default defineConfig({
+  integrations: [
+    starlight({
+      plugins: [myPlugin()],
+    }),
+  ],
+});
+```
+
+## Hook Parameters
+
+### `i18n:setup` Hook
+
+Use this hook to inject custom translation strings for internationalization:
+
+#### `injectTranslations(translations)`
+
+Inject translation strings for different locales:
+
+```ts
+{
+  name: 'plugin-with-i18n',
+  hooks: {
+    'i18n:setup'({ injectTranslations }) {
+      injectTranslations({
+        en: {
+          'myPlugin.greeting': 'Hello',
+          'myPlugin.farewell': 'Goodbye',
+        },
+        fr: {
+          'myPlugin.greeting': 'Bonjour',
+          'myPlugin.farewell': 'Au revoir',
+        },
+        es: {
+          'myPlugin.greeting': 'Hola',
+          'myPlugin.farewell': 'Adiós',
+        },
+      });
+    },
+  },
+}
+```
+
+### `config:setup` Hook
+
+The main hook for plugin functionality. Provides access to:
+
+#### `config`
+
+Read-only copy of the user-supplied Starlight configuration. May include updates from plugins that ran before this one.
+
+```ts
+'config:setup'({ config, logger }) {
+  logger.info(`Site title: ${config.title}`);
+}
+```
+
+#### `updateConfig(newConfig)`
+
+Update the Starlight configuration. Only provide the keys you want to override:
+
+```ts
+'config:setup'({ config, updateConfig }) {
+  updateConfig({
+    social: [
+      ...config.social,
+      {
+        icon: 'github',
+        label: 'GitHub',
+        href: 'https://github.com/myproject',
+      },
+    ],
+  });
+}
+```
+
+#### `addIntegration(integration)`
+
+Add an Astro integration required by your plugin:
+
+```ts
+import react from '@astrojs/react';
+
+'config:setup'({ addIntegration, astroConfig }) {
+  const hasReact = astroConfig.integrations.find(
+    ({ name }) => name === '@astrojs/react'
+  );
+  
+  if (!hasReact) {
+    addIntegration(react());
+  }
+}
+```
+
+#### `addRouteMiddleware(config)`
+
+Register route middleware handlers. The entrypoint should export an `onRequest` function:
+
+```ts
+'config:setup'({ addRouteMiddleware }) {
+  addRouteMiddleware({
+    entrypoint: '@my-plugin/route-middleware',
+    order: 'pre', // 'pre' | 'post' | 'default'
+  });
+}
+```
+
+#### `logger`
+
+Astro integration logger prefixed with your plugin name:
+
+```ts
+'config:setup'({ logger }) {
+  logger.info('Starting setup...');
+  logger.warn('This is a warning');
+  logger.error('Something went wrong');
+}
+```
+
+#### `useTranslations(lang)`
+
+Generate a utility function to access UI strings for a specific language:
+
+```ts
+'config:setup'({ useTranslations, logger }) {
+  const t = useTranslations('fr');
+  logger.info(t('builtWithStarlight.label')); // "Propulsé par Starlight"
+}
+```
+
+#### `absolutePathToLang(path)`
+
+Get the language for a given absolute file path. Useful in remark/rehype plugins:
+
+```ts
+'config:setup'({ absolutePathToLang, useTranslations }) {
+  const lang = absolutePathToLang('/path/to/docs/fr/index.mdx');
+  // lang === 'fr'
+  const t = useTranslations(lang);
+}
+```
+
+#### Other Parameters
+
+- **`astroConfig`**: Read-only Astro configuration
+- **`command`**: `'dev'`, `'build'`, or `'preview'`
+- **`isRestart`**: `false` on initial start, `true` when dev server reloads
+
+## Type Helpers
+
+Use the `HookParameters` utility type to get typed hook arguments:
+
+```ts
+import type { HookParameters } from '@astrojs/starlight/types';
+
+function myConfigSetup(options: HookParameters['config:setup']) {
+  options.updateConfig({ title: 'New Title' });
+}
+
+export default function myPlugin(): StarlightPlugin {
+  return {
+    name: 'my-plugin',
+    hooks: {
+      'config:setup': myConfigSetup,
+    },
+  };
+}
+```
+
+## Real-World Example: Component Override
+
+Here's how the DocSearch plugin overrides the Search component:
+
+```ts title="packages/docsearch/index.ts:98-116"
+export default function starlightDocSearch(userConfig: DocSearchUserConfig): StarlightPlugin {
+  const opts = DocSearchConfigSchema.parse(userConfig);
+  return {
+    name: 'starlight-docsearch',
+    hooks: {
+      'config:setup'({ addIntegration, config, logger, updateConfig }) {
+        if (config.components?.Search) {
+          logger.warn(
+            'It looks like you already have a `Search` component override.'
+          );
+        } else {
+          updateConfig({
+            pagefind: false,
+            components: {
+              ...config.components,
+              Search: '@astrojs/starlight-docsearch/DocSearch.astro',
+            },
+          });
+        }
+
+        addIntegration({
+          name: 'starlight-docsearch',
+          hooks: {
+            'astro:config:setup': ({ updateConfig }) => {
+              // Add Vite plugin for virtual module
+            },
+          },
+        });
+      },
+    },
+  };
+}
+```
+
+## Best Practices
+
+1. **Choose a descriptive name**: Use a unique, descriptive name for your plugin
+2. **Validate user input**: Use Zod or similar to validate plugin options
+3. **Check for conflicts**: Detect if your plugin conflicts with existing configuration
+4. **Use the logger**: Provide helpful messages to users
+5. **Document your plugin**: Include clear installation and usage instructions
+6. **Handle errors gracefully**: Validate inputs and provide useful error messages
+7. **Type your plugin**: Export proper TypeScript types for plugin options
+
+## Publishing Your Plugin
+
+When publishing a plugin to npm:
+
+1. Use a clear package name (e.g., `@scope/starlight-plugin-name`)
+2. Include `"starlight-plugin"` in package keywords
+3. Document required peer dependencies
+4. Provide usage examples in your README
+5. Consider adding your plugin to the [Starlight plugins showcase](https://starlight.astro.build/resources/plugins/)
+
+## Plugin Constraints
+
+- Plugins cannot modify the `plugins` config key
+- Plugins cannot directly modify `routeMiddleware` (use `addRouteMiddleware()` instead)
+- Configuration updates are validated against Starlight's schema
+- Hooks must complete before Starlight finishes initialization

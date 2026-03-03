@@ -1,0 +1,70 @@
+---
+title: CardGrid
+description: API reference for the CardGrid component used to arrange cards in a responsive grid layout.
+---
+
+The `<CardGrid>` component arranges its children (typically `<Card>` components) in a responsive grid layout.
+
+## Import
+
+```tsx
+import { CardGrid } from '@astrojs/starlight/components';
+```
+
+## Props
+
+<ParamField path="stagger" type="boolean" default="false">
+  When `true`, creates a staggered grid layout on larger screens where every other card is vertically offset.
+</ParamField>
+
+## Usage
+
+### Basic grid
+
+```mdx
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid>
+  <Card title="First Card">
+    Content for the first card.
+  </Card>
+  <Card title="Second Card">
+    Content for the second card.
+  </Card>
+  <Card title="Third Card">
+    Content for the third card.
+  </Card>
+  <Card title="Fourth Card">
+    Content for the fourth card.
+  </Card>
+</CardGrid>
+```
+
+### Staggered layout
+
+```mdx
+<CardGrid stagger>
+  <Card title="Card 1">
+    This grid has a staggered layout on desktop.
+  </Card>
+  <Card title="Card 2">
+    Every other card is offset vertically.
+  </Card>
+  <Card title="Card 3">
+    Creates a dynamic visual effect.
+  </Card>
+  <Card title="Card 4">
+    While maintaining readability.
+  </Card>
+</CardGrid>
+```
+
+## Children
+
+The component accepts any children, though it's designed to work best with `<Card>` components.
+
+## Responsive Behavior
+
+- **Mobile** (< 50rem): Single column layout
+- **Desktop** (≥ 50rem): Two-column grid with 1.5rem gap
+- **Stagger effect**: Only applies on desktop when `stagger={true}`

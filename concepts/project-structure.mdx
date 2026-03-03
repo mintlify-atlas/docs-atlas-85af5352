@@ -1,0 +1,187 @@
+---
+title: Project Structure
+description: Learn how Starlight projects are organized and what each file and directory does in your documentation site.
+---
+
+Understanding Starlight's project structure is essential for building and maintaining your documentation site. Starlight follows Astro's conventions while adding specific directories for documentation content.
+
+## Overview
+
+Starlight projects follow the same file and directory structure as other Astro projects. For more details, see [Astro's project structure documentation](https://docs.astro.build/en/basics/project-structure/).
+
+## Core Files and Directories
+
+<Card title="Key Project Files" icon="folder">
+  Every Starlight project contains these essential files that control how your documentation site works.
+</Card>
+
+### Configuration Files
+
+<Steps>
+  <Step title="Astro Configuration">
+    **`astro.config.mjs`** - The main Astro configuration file that includes the Starlight integration and its settings.
+
+    ```js title="astro.config.mjs"
+    import { defineConfig } from 'astro/config';
+    import starlight from '@astrojs/starlight';
+
+    export default defineConfig({
+      integrations: [
+        starlight({
+          title: 'My Docs',
+          social: [
+            { icon: 'github', label: 'GitHub', href: 'https://github.com/withastro/starlight' }
+          ],
+          sidebar: [
+            {
+              label: 'Guides',
+              items: [
+                { label: 'Example Guide', slug: 'guides/example' },
+              ],
+            },
+          ],
+        }),
+      ],
+    });
+    ```
+  </Step>
+
+  <Step title="Content Collections Configuration">
+    **`src/content.config.ts`** - Configures content collections and adds Starlight's frontmatter schemas to your project.
+
+    ```ts title="src/content.config.ts"
+    import { defineCollection } from 'astro:content';
+    import { docsLoader } from '@astrojs/starlight/loaders';
+    import { docsSchema } from '@astrojs/starlight/schema';
+
+    export const collections = {
+      docs: defineCollection({ 
+        loader: docsLoader(), 
+        schema: docsSchema() 
+      }),
+    };
+    ```
+
+    <Note>
+      The `docsSchema()` function provides type-safe frontmatter validation for all your documentation pages.
+    </Note>
+  </Step>
+</Steps>
+
+### Content Directories
+
+<CodeGroup>
+```bash "Documentation Files"
+src/content/docs/
+├── index.md              # Homepage
+├── getting-started.md    # Individual page
+└── guides/
+    ├── example.md        # Nested page
+    └── advanced.md       # Another nested page
+```
+
+```bash "Internationalization (Optional)"
+src/content/i18n/
+├── en/
+│   └── ui.json
+└── es/
+    └── ui.json
+```
+</CodeGroup>
+
+**`src/content/docs/`** - Your documentation content files. Starlight converts each `.md`, `.mdx`, or `.mdoc` file into a page on your site.
+
+**`src/content/i18n/`** (optional) - Translation data to support [internationalization](/guides/i18n/).
+
+### Source Directory
+
+**`src/`** - Contains all source code and files for your project:
+
+- **Custom components** (`.astro`, `.jsx`, `.tsx` files)
+- **Styles** (CSS, SCSS files)
+- **Images and assets**
+- **Additional configuration files**
+
+### Public Directory
+
+**`public/`** - Static assets that won't be processed by Astro:
+
+- Fonts
+- Favicons
+- PDFs and downloadable files
+- Images that don't need optimization
+
+## Example Project Structure
+
+Here's what a typical Starlight project looks like:
+
+```bash
+my-starlight-project/
+├── public/
+│   └── favicon.svg
+├── src/
+│   ├── assets/
+│   │   ├── logo.svg
+│   │   └── screenshot.jpg
+│   ├── components/
+│   │   ├── CustomButton.astro
+│   │   └── InteractiveWidget.jsx
+│   ├── content/
+│   │   ├── docs/
+│   │   │   ├── guides/
+│   │   │   │   ├── 01-getting-started.md
+│   │   │   │   └── 02-advanced.md
+│   │   │   └── index.mdx
+│   │   └── config.ts
+│   └── content.config.ts
+├── astro.config.mjs
+├── package.json
+└── tsconfig.json
+```
+
+## File Organization Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Group Related Pages" icon="folder-tree">
+    Use subdirectories in `src/content/docs/` to organize related documentation pages together.
+  </Card>
+  
+  <Card title="Assets Location" icon="image">
+    Store images in `src/assets/` for optimization, or `public/` for static files that should be served as-is.
+  </Card>
+  
+  <Card title="Custom Components" icon="code">
+    Create reusable Astro or framework components in `src/components/` to use throughout your docs.
+  </Card>
+  
+  <Card title="Naming Convention" icon="pencil">
+    Use descriptive, hyphenated filenames like `getting-started.md` for better SEO and readability.
+  </Card>
+</CardGroup>
+
+## Path Segments and URLs
+
+The directory structure in `src/content/docs/` directly maps to your site's URLs:
+
+| File Path | Generated URL |
+|-----------|---------------|
+| `src/content/docs/index.md` | `/` |
+| `src/content/docs/getting-started.md` | `/getting-started/` |
+| `src/content/docs/guides/example.md` | `/guides/example/` |
+| `src/content/docs/reference/api/auth.md` | `/reference/api/auth/` |
+
+<Tip>
+  Use folders to create multi-segment paths and keep your documentation well-organized.
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Pages" href="/concepts/pages" icon="file">
+    Learn how to create and manage documentation pages
+  </Card>
+  
+  <Card title="Authoring Content" href="/concepts/authoring-content" icon="pen-tool">
+    Master Markdown and MDX for writing great docs
+  </Card>
+</CardGroup>

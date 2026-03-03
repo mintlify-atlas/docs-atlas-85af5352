@@ -1,0 +1,88 @@
+---
+title: Icon
+description: API reference for the Icon component used to display SVG icons.
+---
+
+The `<Icon>` component displays SVG icons from Starlight's built-in icon set. Icons are rendered inline and can be styled with CSS.
+
+## Import
+
+```tsx
+import { Icon } from '@astrojs/starlight/components';
+```
+
+## Props
+
+<ParamField path="name" type="StarlightIcon" required>
+  The name of the icon to display. Must be a valid icon name from Starlight's icon set (e.g., `"star"`, `"rocket"`, `"github"`, etc.).
+</ParamField>
+
+<ParamField path="label" type="string">
+  Accessible label for the icon. If provided, the icon will have an `aria-label` attribute. If not provided, the icon will be marked as `aria-hidden="true"`.
+</ParamField>
+
+<ParamField path="size" type="string" default="'1em'">
+  The size of the icon. Accepts any valid CSS size value (e.g., `"1.5em"`, `"24px"`, `"2rem"`).
+</ParamField>
+
+<ParamField path="color" type="string">
+  The color of the icon. Accepts any valid CSS color value. Defaults to `currentColor`.
+</ParamField>
+
+<ParamField path="class" type="string">
+  Optional CSS class name(s) to apply to the icon element.
+</ParamField>
+
+## Usage
+
+### Basic icon
+
+```mdx
+<Icon name="star" />
+```
+
+### With custom size
+
+```mdx
+<Icon name="rocket" size="2em" />
+```
+
+### With custom color
+
+```mdx
+<Icon name="github" color="#333" />
+```
+
+### With accessibility label
+
+```mdx
+<Icon name="information" label="Important information" />
+```
+
+### In text
+
+Icons can be used inline with text:
+
+```mdx
+Check out our <Icon name="github" /> GitHub repository!
+```
+
+### Combining size and color
+
+```mdx
+<Icon name="warning" size="1.5em" color="orange" />
+```
+
+## Accessibility
+
+- When an icon is decorative (used alongside text), omit the `label` prop and it will automatically be hidden from screen readers
+- When an icon conveys meaning on its own, provide a `label` prop for screen reader users
+
+## Available Icons
+
+Starlight includes a variety of built-in icons. The `StarlightIcon` type includes icons like:
+
+- UI icons: `star`, `rocket`, `puzzle`, `information`, `warning`, `error`
+- Social icons: `github`, `twitter`, `discord`
+- Navigation icons: `right-arrow`, `left-arrow`, `external`
+- And many more...

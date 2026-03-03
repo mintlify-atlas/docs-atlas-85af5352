@@ -1,0 +1,116 @@
+---
+title: Steps
+description: API reference for the Steps component used to display numbered sequential instructions.
+---
+
+The `<Steps>` component displays a numbered list with visual connectors between items, perfect for step-by-step guides and tutorials.
+
+## Import
+
+```tsx
+import { Steps } from '@astrojs/starlight/components';
+```
+
+## Props
+
+The Steps component doesn't accept any props. The content is defined using a numbered list in its children.
+
+## Usage
+
+### Basic steps
+
+Wrap an ordered list with the `<Steps>` component:
+
+```mdx
+<Steps>
+
+1. First step: Install the package
+
+2. Second step: Import the component
+
+3. Third step: Use it in your project
+
+</Steps>
+```
+
+### With headings
+
+Steps can include headings as the first element:
+
+```mdx
+<Steps>
+
+1. ### Install dependencies
+   
+   Run the following command to install all required packages:
+   
+   ```bash
+   npm install
+   ```
+
+2. ### Configure your project
+   
+   Create a configuration file at the root of your project:
+   
+   ```js
+   export default {
+     // config options
+   };
+   ```
+
+3. ### Start development
+   
+   Launch the development server:
+   
+   ```bash
+   npm run dev
+   ```
+
+</Steps>
+```
+
+### Mixed content
+
+```mdx
+<Steps>
+
+1. Create a new file called `config.js`
+
+2. Add the following configuration:
+   
+   ```js
+   export const config = {
+     api: 'https://api.example.com',
+     timeout: 5000
+   };
+   ```
+   
+   Make sure to replace the API URL with your actual endpoint.
+
+3. Import and use the configuration in your app:
+   
+   ```js
+   import { config } from './config.js';
+   ```
+
+</Steps>
+```
+
+## Styling
+
+The Steps component features:
+- Circular numbered badges for each step
+- Vertical line connecting the steps
+- Automatic counter incrementation
+- First element in each step automatically aligns with the number badge
+- Responsive spacing that adjusts based on content
+
+## Children
+
+The component expects its children to be formatted as a numbered Markdown list (using `1.`, `2.`, etc.). Each list item can contain any MDX content including text, code blocks, images, and other components.
+
+## Notes
+
+- Empty lines between list items are required for proper Markdown parsing
+- The vertical guideline automatically adjusts to the height of each step
+- Step numbers are automatically generated using CSS counters

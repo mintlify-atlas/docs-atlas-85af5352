@@ -1,0 +1,182 @@
+---
+title: Icons
+description: Learn how to display icons from Starlight's built-in icon set in your documentation.
+---
+
+
+To display icons from Starlight's built-in icon set, use the `<Icon>` component. Icons are useful for adding visual elements to headings, links, cards, and other components.
+
+## Import
+
+```tsx
+```
+
+## Usage
+
+Display an icon using the `<Icon>` component. An icon requires a `name` set to one of Starlight's built-in icons:
+
+```mdx
+
+<Icon name="star" />
+<Icon name="rocket" />
+<Icon name="approve-check" />
+```
+
+See the [full list of available icons](/reference/icons/#all-icons) in the Icons reference.
+
+### Accessibility
+
+Provide a `label` attribute to make icons accessible to screen readers:
+
+```mdx
+
+<Icon name="starlight" label="The Starlight logo" />
+```
+
+When `label` is not set, the icon is hidden from assistive technologies with `aria-hidden="true"`. This is appropriate for decorative icons where the context is understandable without them.
+
+**Important:** Links containing only an icon must include a `label` to be accessible.
+
+### Customize Icons
+
+Use the `size` and `color` attributes to adjust the icon's appearance:
+
+```mdx
+
+<Icon name="star" color="goldenrod" size="2rem" />
+<Icon name="rocket" color="var(--sl-color-text-accent)" size="3em" />
+```
+
+### Custom CSS Classes
+
+Add custom CSS classes to icons using the `class` attribute:
+
+```mdx
+
+<Icon name="star" class="my-custom-icon" />
+```
+
+```css
+.my-custom-icon {
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+```
+
+## Component API
+
+### `<Icon>` Props
+
+**Implementation:** [`Icon.astro`](https://github.com/withastro/starlight/blob/main/packages/starlight/user-components/Icon.astro)
+
+#### `name`
+
+**Type:** `StarlightIcon`  
+**Required:** Yes
+
+The name of the icon to display. Must be set to one of Starlight's built-in icons. See the [Icons reference](/reference/icons/#all-icons) for the complete list.
+
+#### `label`
+
+**Type:** `string`
+
+An optional label to provide context for assistive technologies like screen readers.
+
+- When `label` is set: Icon has `aria-label` attribute and is visible to screen readers
+- When `label` is not set: Icon has `aria-hidden="true"` and is hidden from screen readers
+
+Use `label` for icons that convey important information. Omit it for purely decorative icons.
+
+#### `size`
+
+**Type:** `string`  
+**Default:** `'1em'`
+
+The size of the icon using CSS units (e.g., `'2rem'`, `'24px'`, `'1.5em'`).
+
+#### `color`
+
+**Type:** `string`
+
+The color of the icon using a CSS color value. Can be:
+- Named colors: `'red'`, `'goldenrod'`
+- Hex colors: `'#ff0000'`
+- RGB/RGBA: `'rgb(255, 0, 0)'`
+- CSS variables: `'var(--sl-color-text-accent)'`
+
+#### `class`
+
+**Type:** `string`
+
+Custom CSS classes to add to the icon element.
+
+## Implementation Details
+
+The `<Icon>` component from `Icon.astro:1`:
+
+```typescript
+interface Props {
+  name: StarlightIcon;
+  label?: string;
+  color?: string;
+  size?: string;
+  class?: string;
+}
+```
+
+### Rendering
+
+Icons are rendered as inline SVG elements:
+
+```html
+<svg 
+  width="16" 
+  height="16" 
+  viewBox="0 0 24 24" 
+  fill="currentColor"
+  aria-label="..." or aria-hidden="true"
+>
+  <!-- SVG path data -->
+</svg>
+```
+
+### Styling with CSS Variables
+
+The component uses CSS custom properties for dynamic styling:
+
+```css
+svg {
+  color: var(--sl-icon-color);
+  font-size: var(--sl-icon-size, 1em);
+  width: 1em;
+  height: 1em;
+}
+```
+
+### Icon Set
+
+Starlight's built-in icons are defined in `packages/starlight/components/Icons.ts`. The `Icons` object maps icon names to SVG path data:
+
+```typescript
+export const Icons = {
+  'star': '<path d="...">',
+  'rocket': '<path d="...">',
+  // ... more icons
+};
+
+export type StarlightIcon = keyof typeof Icons;
+```
+
+## Usage in Other Components
+
+Many Starlight components accept an `icon` prop that uses the same icon system:
+
+- `<Aside icon="..." />`
+- `<Card icon="..." />`
+- `<TabItem icon="..." />`
+- `<LinkButton icon="..." />`
+
+These all use the `<Icon>` component internally.

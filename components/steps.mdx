@@ -1,0 +1,115 @@
+---
+title: Steps
+description: Learn how to style numbered lists of tasks to create step-by-step guides in Starlight.
+---
+
+
+To style a numbered list of tasks as a step-by-step guide, use the `<Steps>` component. This is useful for more complex guides where each step needs to be clearly highlighted with visual numbered bullets and connecting lines.
+
+## Import
+
+```tsx
+```
+
+## Usage
+
+Use the `<Steps>` component to style numbered lists of tasks. Wrap `<Steps>` around a standard Markdown ordered list. All the usual Markdown syntax is applicable inside `<Steps>`:
+
+```mdx
+<Steps>
+
+1. Create a new Starlight project
+
+2. Install dependencies
+
+3. Start the development server
+
+</Steps>
+```
+
+### Complex Step Content
+
+Steps support rich Markdown content. Each step can include:
+
+- Installation commands for different package managers
+- Configuration file examples  
+- Multiple paragraphs and explanations
+- Nested components like Tabs
+
+Example structure:
+
+```mdx
+<Steps>
+
+1. Install the package using your package manager (npm, pnpm, or yarn)
+
+2. Configure Starlight in your astro.config.mjs file by importing defineConfig and starlight, then adding the integration
+
+3. Write your first documentation page
+
+</Steps>
+```
+
+### Step Numbering
+
+Steps automatically number items based on your ordered list. You can also customize the starting number:
+
+```mdx
+<Steps>
+
+5. This will show as step 5
+6. This will show as step 6
+7. This will show as step 7
+
+</Steps>
+```
+
+Or control the start value with inline styles:
+
+```mdx
+<div style="--sl-steps-start: 4">
+  <Steps>
+  
+  1. This will show as step 5
+  2. This will show as step 6
+  
+  </Steps>
+</div>
+```
+
+## Component API
+
+### `<Steps>` Props
+
+**Implementation:** [`Steps.astro`](https://github.com/withastro/starlight/blob/main/packages/starlight/user-components/Steps.astro)
+
+The `<Steps>` component does not accept any props. It wraps the default slot content and processes ordered lists.
+
+## Implementation Details
+
+The `<Steps>` component processes the rendered slot content and transforms ordered lists (`<ol>`) into styled step lists.
+
+### Visual Design
+
+- **Numbered Bullets:** Circular badges with white text on gray background
+- **Connecting Line:** Vertical hairline connecting consecutive steps  
+- **Alignment:** Step content aligns vertically with the number
+- **Spacing:** Consistent padding between steps
+
+### CSS Variables
+
+- `--bullet-size`: Size of numbered circles (based on line height)
+- `--bullet-margin`: Spacing around bullets (0.375rem)
+- `--sl-steps-start`: Starting number for counter (default: 0)
+
+### Styling Details from `Steps.astro:10`
+
+The component uses CSS to style the steps:
+
+- `.sl-steps` - Removes default list styling and sets up counter
+- `.sl-steps > li::before` - Creates circular numbered badge with gray background
+- `.sl-steps > li::after` - Draws vertical connecting line between steps
+
+### Content Alignment
+
+The first child of each step item is automatically aligned with the numbered bullet, even when using larger font sizes (like headings). This is achieved through transform and margin calculations that account for line height differences.

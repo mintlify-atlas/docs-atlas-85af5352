@@ -1,0 +1,128 @@
+---
+title: Plugin System Overview
+description: Learn about Starlight's plugin system and how plugins can extend and customize your documentation site.
+---
+
+Starlight plugins allow you to customize Starlight's configuration, UI, and behavior while being easy to share and reuse. Plugins can add new features, integrate third-party services, or modify how Starlight works.
+
+## What are Plugins?
+
+A Starlight plugin is a JavaScript object that implements the `StarlightPlugin` interface. Plugins can:
+
+- Modify Starlight configuration
+- Add custom UI components
+- Inject translations for internationalization
+- Add Astro integrations
+- Register route middleware
+- Access Starlight's internal APIs
+
+## Plugin Structure
+
+Every Starlight plugin has the following structure:
+
+```ts
+interface StarlightPlugin {
+  name: string;
+  hooks: {
+    'i18n:setup'?: (options: I18nSetupOptions) => void | Promise<void>;
+    'config:setup': (options: ConfigSetupOptions) => void | Promise<void>;
+  };
+}
+```
+
+### Required Properties
+
+- **`name`** (string): A unique name that identifies the plugin. Used for logging and detecting the plugin's presence.
+- **`hooks`** (object): Functions called at specific times during Starlight's initialization.
+
+## Plugin Hooks
+
+Plugins use hooks to run code at specific points in Starlight's lifecycle:
+
+### `i18n:setup`
+
+Called when Starlight is initialized. Use this hook to inject translation strings for different locales.
+
+```ts
+{
+  name: 'my-plugin',
+  hooks: {
+    'i18n:setup'({ injectTranslations }) {
+      injectTranslations({
+        en: { 'myPlugin.label': 'My Label' },
+        fr: { 'myPlugin.label': 'Mon Étiquette' },
+      });
+    },
+  },
+}
+```
+
+### `config:setup`
+
+Called during Starlight's configuration setup. This is the main hook where plugins can:
+
+- Read and update Starlight configuration
+- Add Astro integrations
+- Register route middleware
+- Access utility functions
+
+```ts
+{
+  name: 'my-plugin',
+  hooks: {
+    'config:setup'({ config, updateConfig, addIntegration, logger }) {
+      logger.info('Configuring plugin');
+      updateConfig({ title: 'Updated Title' });
+    },
+  },
+}
+```
+
+## Official Plugins
+
+Starlight provides several official plugins:
+
+- **[DocSearch](/plugins/docsearch)** - Integrate Algolia DocSearch for powerful site search
+- **[Markdoc](/plugins/markdoc)** - Write content using Markdoc syntax with Starlight components
+- **[Tailwind CSS](/plugins/tailwind)** - Style your Starlight site with Tailwind CSS
+
+## Using Plugins
+
+Add plugins to your Starlight configuration using the `plugins` array:
+
+```js title="astro.config.mjs"
+import { defineConfig } from 'astro/config';
+import starlight from '@astrojs/starlight';
+import starlightDocSearch from '@astrojs/starlight-docsearch';
+
+export default defineConfig({
+  integrations: [
+    starlight({
+      title: 'My Docs',
+      plugins: [
+        starlightDocSearch({
+          appId: 'YOUR_APP_ID',
+          apiKey: 'YOUR_API_KEY',
+          indexName: 'YOUR_INDEX_NAME',
+        }),
+      ],
+    }),
+  ],
+});
+```
+
+## Plugin Execution Order
+
+Plugins run in the order they appear in the `plugins` array:
+
+1. Each plugin's `i18n:setup` hook runs first (in order)
+2. Then each plugin's `config:setup` hook runs (in order)
+3. Configuration changes from earlier plugins are visible to later plugins
+
+## Creating Custom Plugins
+
+To create your own plugin, see the [Creating Plugins](/plugins/creating-plugins) guide for detailed instructions and examples.
+
+## Community Plugins
+
+The Starlight community has created many plugins for various use cases. Visit the [plugins showcase](https://starlight.astro.build/resources/plugins/) to discover available plugins or share your own.

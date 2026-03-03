@@ -1,0 +1,133 @@
+---
+title: Tabs
+description: Learn how to create tabbed interfaces in Starlight to group equivalent information.
+---
+
+
+To create a tabbed interface, use the `<Tabs>` and `<TabItem>` components. Tabs are useful for grouping equivalent information where a user only needs to see one of several options, such as different package managers or programming languages.
+
+## Import
+
+```tsx
+```
+
+## Usage
+
+Display a tabbed interface using the `<Tabs>` and `<TabItem>` components. Each `<TabItem>` must have a `label` to display to users:
+
+```mdx
+<Tabs>
+  <TabItem label="npm">
+    npm install @astrojs/starlight
+  </TabItem>
+  <TabItem label="pnpm">
+    pnpm add @astrojs/starlight
+  </TabItem>
+  <TabItem label="Yarn">
+    yarn add @astrojs/starlight
+  </TabItem>
+</Tabs>
+```
+
+### Sync Tabs Across Page
+
+Keep multiple tab groups synchronized by adding the `syncKey` attribute. All `<Tabs>` on a page with the same `syncKey` value will display the same active label.
+
+This allows your reader to choose once (e.g., their operating system or package manager), and see their choice reflected across the page and persisted across page navigations:
+
+```mdx
+## Install the package
+
+<Tabs syncKey="pkg">
+  <TabItem label="npm">
+    Command: npm install @astrojs/starlight
+  </TabItem>
+  <TabItem label="pnpm">
+    Command: pnpm add @astrojs/starlight
+  </TabItem>
+</Tabs>
+
+## Run the dev server
+
+<Tabs syncKey="pkg">
+  <TabItem label="npm">
+    Command: npm run dev
+  </TabItem>
+  <TabItem label="pnpm">
+    Command: pnpm dev
+  </TabItem>
+</Tabs>
+```
+
+### Add Icons to Tabs
+
+Include an icon in a tab item using the `icon` attribute set to the name of one of Starlight's built-in icons:
+
+```mdx
+<Tabs>
+  <TabItem label="Stars" icon="star">
+    Sirius, Vega, Betelgeuse
+  </TabItem>
+  <TabItem label="Moons" icon="moon">
+    Io, Europa, Ganymede
+  </TabItem>
+</Tabs>
+```
+
+## Component API
+
+### `<Tabs>` Props
+
+**Implementation:** [`Tabs.astro`](https://github.com/withastro/starlight/blob/main/packages/starlight/user-components/Tabs.astro)
+
+The `<Tabs>` component groups multiple `<TabItem>` components together.
+
+#### `syncKey`
+
+**Type:** `string`
+
+A key used to keep multiple tab groups synchronized across multiple pages. When a user clicks a tab with a sync key, all other tab groups with the same sync key will update to show the same label.
+
+The selected value is stored in `localStorage` with the key `starlight-synced-tabs__${syncKey}` and persists across page navigations and browser sessions.
+
+### `<TabItem>` Props  
+
+**Implementation:** [`TabItem.astro`](https://github.com/withastro/starlight/blob/main/packages/starlight/user-components/TabItem.astro)
+
+A set of tabs is composed of tab items, each with the following props:
+
+#### `label`
+
+**Type:** `string`  
+**Required:** Yes
+
+The text that will be displayed in the tab button.
+
+#### `icon`
+
+**Type:** `StarlightIcon`
+
+An optional icon to display next to the label. Must be the name of one of Starlight's built-in icons.
+
+## Implementation Details
+
+The `<Tabs>` component accepts an optional `syncKey` prop of type string.
+
+The `<TabItem>` component accepts:
+- `icon` (optional): StarlightIcon type
+- `label` (required): string
+
+### Behavior
+
+- **Keyboard Navigation:** Supports arrow keys (Left/Right), Home, and End keys
+- **ARIA Compliant:** Uses proper `role="tablist"`, `role="tab"`, and `role="tabpanel"` attributes
+- **Sync Persistence:** Synced tab selection is saved to `localStorage`
+- **Restore Script:** Inlined script restores synced tab state on page load to prevent flash
+- **Custom Element:** Registers `<starlight-tabs>` custom element for tab switching logic
+
+### Accessibility
+
+- First tab is initially selected (`aria-selected="true"`)
+- Inactive tabs have `tabindex="-1"` to manage focus
+- Each tab panel has a unique ID linked via `aria-controls`
+- Keyboard navigation follows WAI-ARIA authoring practices

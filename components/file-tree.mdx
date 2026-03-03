@@ -1,0 +1,178 @@
+---
+title: FileTree
+description: Learn how to display the structure of a directory with file icons and collapsible sub-directories in Starlight.
+---
+
+
+To display the structure of a directory with file icons and collapsible sub-directories, use the `<FileTree>` component. This is useful for showing project structure, directory layouts, or file organization.
+
+## Import
+
+```tsx
+```
+
+## Usage
+
+Display a file tree using the `<FileTree>` component. Specify the structure of your files and directories with an unordered Markdown list inside `<FileTree>`:
+
+```mdx
+
+<FileTree>
+
+- src/
+  - components/
+    - Header.astro
+    - Button.astro
+  - pages/
+    - index.astro
+- package.json
+- astro.config.mjs
+
+</FileTree>
+```
+
+### Directories
+
+Create a sub-directory using a nested list, or add a `/` to the end of a list item to render it as a directory without specific content:
+
+```mdx
+
+<FileTree>
+
+- src/
+  - components/
+    - Header.astro
+  - pages/
+- public/
+- package.json
+
+</FileTree>
+```
+
+### Highlight Entries
+
+Make a file or directory stand out by making its name bold using Markdown bold syntax (`**name**`):
+
+```mdx
+
+<FileTree>
+
+- src/
+  - components/
+    - **Header.astro**
+    - Button.astro
+- **package.json**
+
+</FileTree>
+```
+
+Highlighted entries appear with a colored background and colored icon.
+
+### Add Comments
+
+Add a comment to a file or directory by adding text after the name. Inline Markdown formatting such as bold and italics is supported in comments:
+
+```mdx
+
+<FileTree>
+
+- src/
+  - components/
+    - Header.astro The **main** header component
+    - Button.astro A reusable button
+- package.json Project configuration
+
+</FileTree>
+```
+
+### Add Placeholders
+
+Add placeholder files and directories by using either `...` or `…` as the name. This indicates to readers that a folder is expected to contain more items without specifying them all explicitly:
+
+```mdx
+
+<FileTree>
+
+- src/
+  - components/
+    - Header.astro
+    - …
+  - pages/
+- package.json
+
+</FileTree>
+```
+
+Placeholders render with a dimmed appearance and "..." text.
+
+### Escape Special Characters
+
+Escape special characters such as underscores or spaces in filenames by wrapping the filename in code backticks:
+
+```mdx
+
+<FileTree>
+
+- src/
+  - `_private.js`
+  - `Hello World.txt`
+- `__init__.py`
+- **`READ ME FIRST.md`**
+
+</FileTree>
+```
+
+This prevents Markdown from interpreting underscores as emphasis or spaces from breaking the filename.
+
+## Component API
+
+### `<FileTree>` Props
+
+**Implementation:** [`FileTree.astro`](https://github.com/withastro/starlight/blob/main/packages/starlight/user-components/FileTree.astro)
+
+The `<FileTree>` component does not accept any props. It processes the Markdown list provided in its default slot.
+
+## Implementation Details
+
+The `<FileTree>` component processes unordered Markdown lists and transforms them into a styled file tree structure.
+
+### Processing from `FileTree.astro:1`
+
+The component:
+1. Renders the slot content to HTML
+2. Processes it using the `processFileTree()` function from `rehype-file-tree`
+3. Transforms list items into file/directory entries
+4. Adds appropriate icons and styling
+
+### Visual Elements
+
+- **File Icon:** Standard document icon for files
+- **Directory Icon:** Folder icon for directories  
+- **Collapsible:** Directories use `<details>` elements for expand/collapse
+- **Highlights:** Bold entries get colored background
+- **Comments:** Shown in muted gray next to entries
+- **Placeholders:** Dimmed styling for `...` entries
+
+### Styling Features from `FileTree.astro:10`
+
+```css
+starlight-file-tree {
+  display: block;
+  border: 1px solid var(--sl-color-gray-5);
+  padding: 1rem;
+  background-color: var(--sl-color-gray-6);
+  font-family: var(--__sl-font-mono);
+}
+```
+
+- Monospace font for code-like appearance
+- Bordered container with padding
+- Nested indentation with hairline borders
+- Hover effects on directory summaries
+- Icons colored based on entry type and state
+
+### Custom Element
+
+The component renders as `<starlight-file-tree>` custom element for styling and isolation. It uses:
+- `data-pagefind-ignore` to exclude from search indexing
+- `.not-content` class to exclude from default content styling

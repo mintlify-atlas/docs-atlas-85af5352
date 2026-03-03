@@ -1,0 +1,109 @@
+---
+title: Code
+description: API reference for the Code component used to display syntax-highlighted code blocks.
+---
+
+The `<Code>` component renders syntax-highlighted code blocks using Expressive Code. It's re-exported from the `astro-expressive-code` package and provides advanced features like line highlighting, code annotations, and more.
+
+## Import
+
+```tsx
+import { Code } from '@astrojs/starlight/components';
+```
+
+## Props
+
+The Code component accepts all props from Expressive Code's `<Code>` component. Common props include:
+
+<ParamField path="code" type="string" required>
+  The code string to display.
+</ParamField>
+
+<ParamField path="lang" type="string">
+  The language identifier for syntax highlighting (e.g., `"js"`, `"tsx"`, `"python"`, etc.).
+</ParamField>
+
+<ParamField path="title" type="string">
+  Optional title to display above the code block.
+</ParamField>
+
+<ParamField path="mark" type="string | number[]">
+  Lines or ranges to highlight. Can be a string like `"1-3, 5"` or an array of line numbers.
+</ParamField>
+
+<ParamField path="ins" type="string | number[]">
+  Lines to mark as inserted (with a green background).
+</ParamField>
+
+<ParamField path="del" type="string | number[]">
+  Lines to mark as deleted (with a red background).
+</ParamField>
+
+<ParamField path="frame" type="'code' | 'terminal' | 'none'">
+  The frame style for the code block.
+</ParamField>
+
+## Usage
+
+### Basic code block
+
+```mdx
+<Code code={`const greeting = "Hello, world!";`} lang="js" />
+```
+
+### With title
+
+```mdx
+<Code
+  code={`function greet(name) {
+  return \`Hello, \${name}!\`;
+}`}
+  lang="js"
+  title="greet.js"
+/>
+```
+
+### With line highlighting
+
+```mdx
+<Code
+  code={`const a = 1;
+const b = 2;
+const sum = a + b;
+console.log(sum);`}
+  lang="js"
+  mark="3"
+/>
+```
+
+### With insertions and deletions
+
+```mdx
+<Code
+  code={`function oldName() {
+  // old implementation
+}
+function newName() {
+  // new implementation
+}`}
+  lang="js"
+  del="1-3"
+  ins="4-6"
+/>
+```
+
+## Note
+
+This component is a re-export from `astro-expressive-code`. For complete documentation of all available props and features, refer to the [Expressive Code documentation](https://expressive-code.com/).
+
+## Alternative
+
+In most cases, you can use standard Markdown code fences instead of the `<Code>` component:
+
+````mdx
+```js title="example.js" {3}
+const a = 1;
+const b = 2;
+const sum = a + b;
+```
+````

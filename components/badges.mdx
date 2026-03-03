@@ -1,0 +1,186 @@
+---
+title: Badges
+description: Learn how to use badges in Starlight to display status labels and small pieces of information.
+---
+
+
+To display small pieces of information such as status, category, or version labels, use the `<Badge>` component.
+
+## Import
+
+```tsx
+```
+
+## Usage
+
+Display a badge using the `<Badge>` component. Pass the content you want to display to the `text` attribute:
+
+```mdx
+
+<Badge text="New" />
+<Badge text="Beta" />
+<Badge text="v2.0" />
+```
+
+### Badge Variants
+
+By default, badges use your site's theme accent color. Use the `variant` attribute to use a built-in badge color:
+
+```mdx
+
+<Badge text="Note" variant="note" />
+<Badge text="Success" variant="success" />
+<Badge text="Tip" variant="tip" />
+<Badge text="Caution" variant="caution" />
+<Badge text="Danger" variant="danger" />
+<Badge text="Default" variant="default" />
+```
+
+Variant colors:
+- **`note`** - Blue
+- **`success`** - Green  
+- **`tip`** - Purple
+- **`caution`** - Orange
+- **`danger`** - Red
+- **`default`** - Theme accent color
+
+### Badge Sizes
+
+Control the size of the badge text using the `size` attribute:
+
+```mdx
+
+<Badge text="Small" size="small" />
+<Badge text="Medium" size="medium" />
+<Badge text="Large" size="large" />
+```
+
+Sizes:
+- **`small`** - Extra small text (default)
+- **`medium`** - Small text
+- **`large`** - Base text size
+
+### Customize Badges
+
+Badges accept all standard `<span>` attributes including `class` and `style` for custom styling:
+
+```mdx
+
+<Badge 
+  text="Custom" 
+  variant="success" 
+  style={{ fontStyle: 'italic' }} 
+/>
+
+<Badge 
+  text="Custom Class" 
+  class="my-badge" 
+/>
+```
+
+### Badges in Headings
+
+Badges automatically align vertically when used inside headings:
+
+```mdx
+
+## API Reference <Badge text="v2.0" variant="tip" />
+
+### Authentication <Badge text="New" />
+```
+
+## Component API
+
+### `<Badge>` Props
+
+**Implementation:** [`Badge.astro`](https://github.com/withastro/starlight/blob/main/packages/starlight/user-components/Badge.astro)
+
+The component accepts the following props plus any [other `<span>` attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes).
+
+#### `text`
+
+**Type:** `string`  
+**Required:** Yes
+
+The text content to display in the badge.
+
+#### `variant`
+
+**Type:** `'note' | 'danger' | 'success' | 'caution' | 'tip' | 'default'`  
+**Default:** `'default'`
+
+The badge color variant:
+- `note` - Blue color scheme
+- `tip` - Purple color scheme
+- `danger` - Red color scheme
+- `caution` - Orange color scheme  
+- `success` - Green color scheme
+- `default` - Theme accent color
+
+#### `size`
+
+**Type:** `'small' | 'medium' | 'large'`  
+**Default:** `'small'`
+
+Defines the size of the badge:
+- `small` - `var(--sl-text-xs)` font size, 0.125rem padding
+- `medium` - `var(--sl-text-sm)` font size, 0.175rem padding
+- `large` - `var(--sl-text-base)` font size, 0.225rem padding
+
+#### `class`
+
+**Type:** `string`
+
+Custom CSS classes to add to the badge.
+
+#### Other Props
+
+Any other valid `<span>` HTML attributes (e.g., `style`, `id`, `data-*` attributes).
+
+## Implementation Details
+
+The `<Badge>` component from `Badge.astro:1`:
+
+```typescript
+interface Props {
+  text: string;
+  variant?: 'note' | 'danger' | 'success' | 'caution' | 'tip' | 'default';
+  size?: 'small' | 'medium' | 'large';
+  class?: string;
+}
+```
+
+### Schema Validation
+
+Badge props are validated using the `BadgeComponentSchema` from `schemas/badge.ts:1`:
+
+```typescript
+const BadgeComponentSchema = z.object({
+  text: z.string(),
+  variant: z.enum(['note', 'danger', 'success', 'caution', 'tip', 'default']).default('default'),
+  size: z.enum(['small', 'medium', 'large']).default('small'),
+  class: z.string().optional(),
+}).passthrough();
+```
+
+### CSS Variables
+
+Each variant defines three CSS variables:
+
+```css
+--sl-badge-{variant}-border
+--sl-badge-{variant}-bg  
+--sl-badge-{variant}-text
+```
+
+For example, the `note` variant:
+
+```css
+--sl-badge-note-border: var(--sl-color-blue);
+--sl-badge-note-bg: var(--sl-color-blue-low);
+--sl-badge-note-text: #fff;
+```
+
+### Sidebar Usage
+
+Badges have special styling when used in the sidebar with smaller font size and padding optimized for navigation items.

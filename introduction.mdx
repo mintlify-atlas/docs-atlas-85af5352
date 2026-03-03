@@ -1,0 +1,115 @@
+---
+title: Introduction to Starlight
+description: Build beautiful, high-performance documentation websites with Starlight, a full-featured documentation framework built on Astro.
+---
+
+Starlight is a full-featured documentation theme built on top of the [Astro](https://astro.build) framework. Created to help you build beautiful, accessible, and high-performance documentation sites with minimal configuration.
+
+<CardGroup cols={2}>
+  <Card title="Lightning Fast" icon="bolt">
+    Built on Astro's static site generation, Starlight sites load in under 50 KB on first visit — just 2.5% of the median web page size.
+  </Card>
+  
+  <Card title="Accessible by Default" icon="check">
+    Starlight follows best practices for accessibility out of the box, including proper semantic HTML, ARIA labels, and keyboard navigation.
+  </Card>
+  
+  <Card title="SEO Optimized" icon="search">
+    Automatic sitemap generation, optimized meta tags, and structured data help your docs rank well in search engines.
+  </Card>
+  
+  <Card title="Internationalization" icon="globe">
+    Built-in i18n support with right-to-left (RTL) text, translated UI strings, and locale-aware routing.
+  </Card>
+  
+  <Card title="Dark Mode" icon="moon">
+    Automatic dark mode support that respects user preferences with smooth theme transitions.
+  </Card>
+  
+  <Card title="Powerful Search" icon="magnifying-glass">
+    Full-text search powered by Pagefind runs entirely in the browser with zero backend required.
+  </Card>
+</CardGroup>
+
+## Why Starlight?
+
+Starlight combines the best of modern web development with the specific needs of documentation sites:
+
+### Performance First
+
+Starlight generates static HTML at build time, resulting in blazing-fast page loads. With intelligent caching strategies and minimal JavaScript, your documentation loads instantly and stays responsive.
+
+<Note>
+  According to the Website Carbon Calculator, Starlight produces only **0.01g of CO₂ per page visit**, making it cleaner than 98% of web pages tested.
+</Note>
+
+### Developer Experience
+
+Built on Astro, Starlight offers a familiar development experience:
+
+- **File-based routing** — Create pages by adding Markdown, MDX, or Markdoc files
+- **Component-driven** — Use Astro components or bring your own React, Vue, or Svelte components
+- **TypeScript support** — Full type safety for configuration and frontmatter
+- **Hot module replacement** — See changes instantly during development
+
+### Production Ready Features
+
+Starlight includes everything you need for professional documentation:
+
+<Steps>
+  <Step title="Built-in Components">
+    Cards, tabs, code blocks with syntax highlighting, file trees, and more — all accessible and mobile-friendly.
+  </Step>
+  
+  <Step title="Automatic Navigation">
+    Sidebar navigation is automatically generated from your file structure, with support for manual ordering and grouping.
+  </Step>
+  
+  <Step title="Table of Contents">
+    Auto-generated table of contents for each page makes it easy to navigate long-form documentation.
+  </Step>
+  
+  <Step title="Edit on GitHub Links">
+    Encourage contributions with automatic "Edit this page" links to your repository.
+  </Step>
+</Steps>
+
+## Quick Start
+
+Get started with Starlight in minutes:
+
+```bash
+npm create astro@latest -- --template starlight
+```
+
+This creates a new Astro project with Starlight pre-configured and ready to go. Check out the [Quickstart guide](/quickstart) for detailed instructions.
+
+## Use Cases
+
+Starlight is perfect for:
+
+- **Product Documentation** — Document your SaaS product, API, or SDK
+- **Technical Guides** — Create comprehensive tutorials and how-to guides  
+- **Component Libraries** — Showcase your design system or component library
+- **Knowledge Bases** — Build internal wikis and knowledge repositories
+- **Open Source Projects** — Provide clear documentation for your open source tools
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Get your first Starlight site up and running in minutes.
+  </Card>
+  
+  <Card title="Manual Setup" icon="wrench" href="/manual-setup">
+    Add Starlight to an existing Astro project.
+  </Card>
+  
+  <Card title="Configuration" icon="gear" href="/configuration">
+    Customize your site with Starlight's configuration options.
+  </Card>
+  
+  <Card title="Environmental Impact" icon="leaf" href="/environmental-impact">
+    Learn how Starlight helps you build eco-friendly documentation.
+  </Card>
+</CardGroup>

@@ -1,0 +1,289 @@
+---
+title: Tailwind CSS Plugin
+description: Use Tailwind CSS to style your Starlight documentation site with utility-first classes.
+---
+
+
+The `@astrojs/starlight-tailwind` package provides CSS compatibility layers that allow you to use Tailwind CSS alongside Starlight's default styles.
+
+## What is Tailwind CSS?
+
+[Tailwind CSS](https://tailwindcss.com/) is a utility-first CSS framework for rapidly building custom user interfaces. Instead of writing custom CSS, you compose designs using utility classes directly in your HTML.
+
+## Why a Compatibility Package?
+
+Starlight uses CSS custom properties and cascade layers for its theming system. The `@astrojs/starlight-tailwind` package ensures Tailwind's styles work correctly with Starlight's architecture by:
+
+- Defining proper CSS cascade layer ordering
+- Importing Starlight's Tailwind-compatible styles
+- Ensuring Tailwind utilities can override Starlight defaults when needed
+
+## Installation
+
+### Prerequisites
+
+This package requires:
+- `@astrojs/starlight` >= 0.34.0
+- `tailwindcss` ^4.0.0
+
+### Setup Steps
+
+1. Install the Tailwind CSS integration for Astro:
+
+    <Tabs syncKey="pkg">
+    <TabItem label="npm">
+
+    ```sh
+    npx astro add tailwind
+    ```
+
+    </TabItem>
+    <TabItem label="pnpm">
+
+    ```sh
+    pnpm astro add tailwind
+    ```
+
+    </TabItem>
+    <TabItem label="Yarn">
+
+    ```sh
+    yarn astro add tailwind
+    ```
+
+    </TabItem>
+    </Tabs>
+
+2. Install Starlight's Tailwind compatibility package:
+
+    <Tabs syncKey="pkg">
+    <TabItem label="npm">
+
+    ```sh
+    npm install @astrojs/starlight-tailwind
+    ```
+
+    </TabItem>
+    <TabItem label="pnpm">
+
+    ```sh
+    pnpm add @astrojs/starlight-tailwind
+    ```
+
+    </TabItem>
+    <TabItem label="Yarn">
+
+    ```sh
+    yarn add @astrojs/starlight-tailwind
+    ```
+
+    </TabItem>
+    </Tabs>
+
+3. Replace the contents of the `src/styles/global.css` file created by Astro:
+
+    ```css title="src/styles/global.css"
+    @layer base, starlight, theme, components, utilities;
+
+    @import '@astrojs/starlight-tailwind';
+    @import 'tailwindcss/theme.css' layer(theme);
+    @import 'tailwindcss/utilities.css' layer(utilities);
+    ```
+
+    This defines the cascade layer order and imports the necessary styles.
+
+4. Add the CSS file to Starlight's `customCss` configuration:
+
+    ```js title="astro.config.mjs" ins={4,11-12}
+    import { defineConfig } from 'astro/config';
+    import starlight from '@astrojs/starlight';
+    import tailwindcss from '@tailwindcss/vite';
+
+    export default defineConfig({
+      integrations: [
+        starlight({
+          title: 'Docs with Tailwind',
+          customCss: [
+            // Path to your Tailwind base styles
+            './src/styles/global.css',
+          ],
+        }),
+      ],
+      vite: {
+        plugins: [tailwindcss()],
+      },
+    });
+    ```
+
+## Using Tailwind in Your Site
+
+Once configured, you can use Tailwind utility classes in your Starlight pages:
+
+### In MDX Files
+
+```mdx title="src/content/docs/example.mdx"
+---
+title: Example Page
+---
+
+<div class="bg-blue-500 text-white p-4 rounded-lg">
+  This is styled with Tailwind!
+</div>
+```
+
+### In Custom Components
+
+```astro title="src/components/CustomCard.astro"
+---
+const { title } = Astro.props;
+---
+
+<div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
+  <h2 class="text-2xl font-bold mb-4">{title}</h2>
+  <slot />
+</div>
+```
+
+### In Overridden Components
+
+When customizing Starlight components, use Tailwind classes:
+
+```astro title="src/components/Hero.astro"
+<section class="hero bg-gradient-to-r from-purple-500 to-pink-500">
+  <h1 class="text-4xl font-extrabold text-white">
+    Welcome to My Docs
+  </h1>
+</section>
+```
+
+## Cascade Layers
+
+The `global.css` file defines the following cascade layer order:
+
+```css
+@layer base, starlight, theme, components, utilities;
+```
+
+This means:
+- **base**: Foundation styles (lowest priority)
+- **starlight**: Starlight's default styles
+- **theme**: Tailwind theme configuration
+- **components**: Your custom component styles
+- **utilities**: Tailwind utilities (highest priority)
+
+This ordering ensures Tailwind utilities can always override other styles when needed.
+
+## What's in the Package?
+
+From `packages/tailwind/package.json:2-4` and the file listing, the package exports a single CSS file:
+
+```json
+{
+  "name": "@astrojs/starlight-tailwind",
+  "version": "4.0.2",
+  "exports": {
+    ".": "./tailwind.css"
+  }
+}
+```
+
+The `tailwind.css` file (from `packages/tailwind/tailwind.css`) contains Starlight-specific CSS that's been adapted to work within Tailwind's architecture, ensuring proper cascade layer integration and design token compatibility.
+
+## Dark Mode
+
+Tailwind's dark mode works automatically with Starlight's theme switcher. Use Tailwind's `dark:` variant:
+
+```html
+<div class="bg-white dark:bg-gray-900 text-black dark:text-white">
+  Content that adapts to the theme
+</div>
+```
+
+Starlight sets a `data-theme` attribute on the root element, and Tailwind v4 respects this for dark mode.
+
+## Use Multiple Tailwind Configurations
+
+If your project needs additional Tailwind configuration beyond what's in `global.css`, you can extend it:
+
+```css title="src/styles/global.css"
+@layer base, starlight, theme, components, utilities;
+
+@import '@astrojs/starlight-tailwind';
+@import 'tailwindcss/theme.css' layer(theme);
+/* Add your custom theme extensions */
+@theme {
+  --color-primary: #3b82f6;
+}
+@import 'tailwindcss/utilities.css' layer(utilities);
+```
+
+You can also create additional configuration files for specific parts of your project.
+
+## Customizing Starlight with Tailwind
+
+### Override Default Spacing
+
+Use Tailwind utilities to adjust Starlight's spacing:
+
+```mdx
+<div class="sl-markdown-content space-y-8">
+  Content with custom spacing
+</div>
+```
+
+### Custom Color Schemes
+
+While Starlight has its own color system, you can add Tailwind colors for custom components:
+
+```css title="src/styles/global.css"
+@theme {
+  --color-brand-50: #eff6ff;
+  --color-brand-500: #3b82f6;
+  --color-brand-900: #1e3a8a;
+}
+```
+
+### Typography
+
+Combine Starlight's typography with Tailwind utilities:
+
+```html
+<article class="prose dark:prose-invert max-w-none">
+  <!-- Your markdown content -->
+</article>
+```
+
+## Best Practices
+
+1. **Use Tailwind for custom components**: Let Starlight handle the main documentation layout, use Tailwind for your custom additions
+2. **Respect cascade layers**: Put custom component styles in the `components` layer
+3. **Leverage utilities last**: Tailwind utilities in the `utilities` layer can override everything
+4. **Test in both themes**: Always check your Tailwind styles in both light and dark mode
+5. **Don't fight Starlight**: Work with Starlight's design system rather than against it
+
+## Troubleshooting
+
+### Styles not applying
+
+- Ensure `global.css` is listed first in `customCss`
+- Check that cascade layers are defined in the correct order
+- Verify Tailwind Vite plugin is added to `vite.plugins`
+
+### Dark mode not working
+
+- Confirm you're using the `dark:` variant correctly
+- Check that Starlight's theme switcher is enabled
+- Verify Tailwind v4 is installed (v3 uses different dark mode strategy)
+
+### Conflicts with Starlight styles
+
+- Use more specific utility classes
+- Check cascade layer ordering in `global.css`
+- Consider using the `!` important modifier sparingly: `!bg-blue-500`
+
+## Resources
+
+- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
+- [Tailwind v4 Upgrade Guide](https://tailwindcss.com/docs/v4-beta)
+- [Starlight CSS & Styling Guide](https://starlight.astro.build/guides/css-and-tailwind/)
+- [CSS Cascade Layers](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer)

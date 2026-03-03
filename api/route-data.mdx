@@ -1,0 +1,347 @@
+---
+title: Route Data
+description: API reference for Starlight's route data types and utilities.
+---
+
+
+Starlight's route data system provides a comprehensive data model for rendering documentation pages. This reference documents the types and utilities available for working with route data.
+
+For a practical guide on using and customizing route data, see the [Route Data guide](/guides/route-data/).
+
+## `defineRouteMiddleware()`
+
+Defines middleware to customize route data before pages are rendered.
+
+### Signature
+
+```ts
+function defineRouteMiddleware(
+  fn: RouteMiddlewareHandler
+): RouteMiddlewareHandler
+```
+
+### Parameters
+
+#### `fn`
+
+**Type:** `RouteMiddlewareHandler`
+
+A middleware function that receives the current context and an optional `next` callback.
+
+```ts
+type RouteMiddlewareHandler = (
+  context: APIContext,
+  next: () => Promise<void>
+) => void | Promise<void>
+```
+
+**Parameters:**
+- **`context`** - Astro's [`APIContext`](https://docs.astro.build/en/reference/api-reference/#endpoint-context) object containing:
+  - `locals.starlightRoute` - The route data object for the current page
+  - `url` - The current URL
+  - `request` - The current request
+  - And other Astro context properties
+- **`next`** - Callback to execute later middleware in the stack
+
+### Returns
+
+The same middleware handler function passed as input. This is a type helper that provides proper TypeScript types.
+
+### Example
+
+```ts title="src/middleware/route-data.ts"
+import { defineRouteMiddleware } from '@astrojs/starlight/route-data';
+
+export const onRequest = defineRouteMiddleware(async (context, next) => {
+  // Access route data from context
+  const route = context.locals.starlightRoute;
+  
+  // Modify route data before rendering
+  route.entry.data.title = route.entry.data.title.toUpperCase();
+  
+  // Optionally wait for later middleware
+  await next();
+});
+```
+
+Then configure it in your Starlight config:
+
+```js title="astro.config.mjs"
+import { defineConfig } from 'astro/config';
+import starlight from '@astrojs/starlight';
+
+export default defineConfig({
+  integrations: [
+    starlight({
+      title: 'My Docs',
+      routeMiddleware: './src/middleware/route-data.ts',
+    }),
+  ],
+});
+```
+
+## Type: `StarlightRouteData`
+
+The main route data object available at `Astro.locals.starlightRoute` in all Starlight pages and components.
+
+```ts
+interface StarlightRouteData extends Route {
+  // Site configuration
+  siteTitle: string;
+  siteTitleHref: string;
+  
+  // Page content
+  headings: MarkdownHeading[];
+  Content?: RenderResult['Content'];
+  
+  // Navigation
+  sidebar: SidebarEntry[];
+  hasSidebar: boolean;
+  pagination: PaginationLinks;
+  
+  // Table of contents
+  toc: { 
+    minHeadingLevel: number;
+    maxHeadingLevel: number;
+    items: TocItem[];
+  } | undefined;
+  
+  // Metadata
+  lastUpdated: Date | undefined;
+  editUrl: URL | undefined;
+  head: HeadConfig;
+  
+  // Inherited from Route (see below)
+  entry: StarlightDocsEntry;
+  entryMeta: LocaleData;
+  dir: 'ltr' | 'rtl';
+  lang: string;
+  locale: string | undefined;
+  slug: string; // @deprecated - use id instead
+  id: string;
+  isFallback?: boolean;
+}
+```
+
+### Properties
+
+#### `siteTitle`
+
+**Type:** `string`
+
+The title of the site from Starlight configuration.
+
+#### `siteTitleHref`
+
+**Type:** `string`
+
+URL or path used as the link when clicking on the site title.
+
+#### `headings`
+
+**Type:** `MarkdownHeading[]`
+
+Array of Markdown headings extracted from the current page. Each heading includes:
+- `depth` (number) - Heading level (1-6)
+- `text` (string) - Heading text content
+- `slug` (string) - URL-safe slug for the heading
+
+#### `Content`
+
+**Type:** `RenderResult['Content']` (optional)
+
+An Astro component to render the current page's content. Only available for Markdown/MDX pages.
+
+#### `sidebar`
+
+**Type:** `SidebarEntry[]`
+
+Site navigation sidebar entries for this page. See [`SidebarEntry`](#type-sidebarentry) below.
+
+#### `hasSidebar`
+
+**Type:** `boolean`
+
+Whether the sidebar should be displayed on this page. Set to `false` for `splash` template pages.
+
+#### `pagination`
+
+**Type:** `PaginationLinks`
+
+Links to the previous and next page in the sidebar if pagination is enabled.
+
+```ts
+interface PaginationLinks {
+  prev: SidebarLink | undefined;
+  next: SidebarLink | undefined;
+}
+```
+
+#### `toc`
+
+**Type:** `object | undefined`
+
+Table of contents for this page if enabled. Contains:
+- `minHeadingLevel` (number) - Minimum heading level to include
+- `maxHeadingLevel` (number) - Maximum heading level to include  
+- `items` (TocItem[]) - Hierarchical array of table of contents items
+
+#### `lastUpdated`
+
+**Type:** `Date | undefined`
+
+JavaScript Date object representing when this page was last updated, if enabled in configuration or frontmatter.
+
+#### `editUrl`
+
+**Type:** `URL | undefined`
+
+URL object for the address where this page can be edited, if enabled in configuration or frontmatter.
+
+#### `head`
+
+**Type:** `HeadConfig`
+
+Array of tags to include in the `<head>` of the current page.
+
+#### `entry`
+
+**Type:** `StarlightDocsEntry`
+
+Content collection entry for the current page. Includes:
+- `id` (string) - Unique identifier for the entry
+- `slug` (string) - URL slug for the entry
+- `filePath` (string) - File path of the source file
+- `collection` (string) - Collection name (always `'docs'`)
+- `data` - Frontmatter data from the page
+- `body` (string) - Raw content body
+
+#### `entryMeta`
+
+**Type:** `LocaleData`
+
+Locale metadata for the page content. Can be different from top-level locale values when a page is using fallback content.
+
+```ts
+interface LocaleData {
+  dir: 'ltr' | 'rtl';
+  lang: string;
+  locale: string | undefined;
+}
+```
+
+#### `dir`
+
+**Type:** `'ltr' | 'rtl'`
+
+Writing direction for the current locale.
+
+#### `lang`
+
+**Type:** `string`
+
+BCP-47 language tag for the current locale (e.g., `'en'`, `'fr'`, `'zh-CN'`).
+
+#### `locale`
+
+**Type:** `string | undefined`
+
+The base path at which this language is served. `undefined` for the root locale.
+
+#### `id`
+
+**Type:** `string`
+
+The slug or unique ID of the entry.
+
+#### `slug`
+
+**Type:** `string`
+
+<Aside type="caution">
+**Deprecated:** Migrate to the Content Layer API and use `id` instead.
+</Aside>
+
+The slug of the entry when using legacy collections.
+
+#### `isFallback`
+
+**Type:** `boolean` (optional)
+
+Whether this page is untranslated in the current language and using fallback content from the default locale.
+
+## Type: `SidebarEntry`
+
+Union type representing an entry in the sidebar navigation.
+
+```ts
+type SidebarEntry = SidebarLink | SidebarGroup;
+```
+
+### `SidebarLink`
+
+A link item in the sidebar:
+
+```ts
+interface SidebarLink {
+  type: 'link';
+  label: string;
+  href: string;
+  isCurrent: boolean;
+  badge: Badge | undefined;
+  attrs: LinkHTMLAttributes;
+}
+```
+
+**Properties:**
+- **`type`** - Always `'link'`
+- **`label`** - Display text for the link
+- **`href`** - URL the link points to
+- **`isCurrent`** - Whether this link points to the current page
+- **`badge`** - Optional badge configuration
+- **`attrs`** - HTML attributes to apply to the link element
+
+### `SidebarGroup`
+
+A collapsible group of sidebar items:
+
+```ts
+interface SidebarGroup {
+  type: 'group';
+  label: string;
+  entries: (SidebarLink | SidebarGroup)[];
+  collapsed: boolean;
+  badge: Badge | undefined;
+}
+```
+
+**Properties:**
+- **`type`** - Always `'group'`
+- **`label`** - Display text for the group heading
+- **`entries`** - Nested array of links and groups
+- **`collapsed`** - Whether the group is collapsed by default
+- **`badge`** - Optional badge configuration
+
+## Usage in Components
+
+Access route data in any Astro component using `Astro.locals.starlightRoute`:
+
+```astro title="src/components/Example.astro"
+---
+const { siteTitle, sidebar, toc } = Astro.locals.starlightRoute;
+---
+
+<h1>{siteTitle}</h1>
+
+{toc && (
+  <nav>
+    <ul>
+      {toc.items.map(item => (
+        <li><a href={`#${item.slug}`}>{item.text}</a></li>
+      ))}
+    </ul>
+  </nav>
+)}
+```
+
+This is particularly useful when creating [component overrides](/guides/overriding-components/) to customize Starlight's default behavior.

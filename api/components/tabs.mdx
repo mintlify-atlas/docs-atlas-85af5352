@@ -1,0 +1,147 @@
+---
+title: Tabs & TabItem
+description: API reference for the Tabs and TabItem components used to create tabbed content interfaces.
+---
+
+The `<Tabs>` and `<TabItem>` components work together to create a tabbed interface for organizing related content. Tabs can optionally be synchronized across the page.
+
+## Import
+
+```tsx
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+```
+
+## Tabs Props
+
+<ParamField path="syncKey" type="string">
+  Optional key for synchronizing tab selection across multiple tab groups on the same page. When provided, all tab groups with the same `syncKey` will switch together, and the selection is persisted in localStorage.
+</ParamField>
+
+## TabItem Props
+
+<ParamField path="label" type="string" required>
+  The text label to display in the tab button.
+</ParamField>
+
+<ParamField path="icon" type="StarlightIcon">
+  Optional icon to display alongside the label in the tab button. Must be a valid icon name from Starlight's icon set.
+</ParamField>
+
+## Usage
+
+### Basic tabs
+
+Create a simple tabbed interface with multiple options:
+
+```mdx
+<Tabs>
+  <TabItem label="JavaScript">
+    JavaScript code goes here
+  </TabItem>
+  <TabItem label="TypeScript">
+    TypeScript code goes here
+  </TabItem>
+  <TabItem label="Python">
+    Python code goes here
+  </TabItem>
+</Tabs>
+```
+
+### With icons
+
+Add icons to your tab labels using the `icon` prop:
+
+```mdx
+<Tabs>
+  <TabItem label="Preview" icon="document">
+    This is what users will see.
+  </TabItem>
+  <TabItem label="Code" icon="seti:javascript">
+    Your code content here: const message = "Hello!";
+  </TabItem>
+</Tabs>
+```
+
+### Synchronized tabs
+
+Use the `syncKey` prop to synchronize multiple tab groups. When a user selects a tab in one group, all other groups with the same `syncKey` will switch to the matching tab:
+
+```mdx
+<Tabs syncKey="package-manager">
+  <TabItem label="npm">
+    Install command: npm install my-package
+  </TabItem>
+  <TabItem label="pnpm">
+    Install command: pnpm add my-package
+  </TabItem>
+  <TabItem label="yarn">
+    Install command: yarn add my-package
+  </TabItem>
+</Tabs>
+
+Later on the same page, this tab group will stay synchronized:
+
+<Tabs syncKey="package-manager">
+  <TabItem label="npm">
+    Run command: npm run dev
+  </TabItem>
+  <TabItem label="pnpm">
+    Run command: pnpm dev
+  </TabItem>
+  <TabItem label="yarn">
+    Run command: yarn dev
+  </TabItem>
+</Tabs>
+```
+
+### Mixed content
+
+Tab items can contain any MDX content including headings, lists, and formatted text:
+
+```mdx
+<Tabs>
+  <TabItem label="Getting Started">
+    ## Welcome!
+    
+    This tab contains markdown content including headings, lists, and more.
+    
+    - Easy to use
+    - Fully customizable
+    - Accessible
+  </TabItem>
+  <TabItem label="Installation">
+    Install the package using your preferred package manager (npm install my-package)
+  </TabItem>
+</Tabs>
+```
+
+## Keyboard Navigation
+
+The Tabs component supports full keyboard navigation:
+
+- **Tab**: Focus the tab list
+- **Arrow Left/Right**: Navigate between tabs
+- **Home**: Jump to first tab
+- **End**: Jump to last tab
+
+## Synchronized Tabs
+
+When using `syncKey`:
+- Tab selection is synchronized across all tab groups with the same key
+- Selection is persisted in localStorage
+- Automatically restores last selected tab on page load
+- Works across page navigations
+
+## Accessibility
+
+The component implements the ARIA tabs pattern with proper roles and attributes:
+- `role="tablist"` on the tab container
+- `role="tab"` on each tab button
+- `role="tabpanel"` on each content panel
+- `aria-selected` to indicate active tab
+- `aria-controls` to link tabs with their panels
+
+## Children
+
+- **Tabs**: Must contain one or more `<TabItem>` components
+- **TabItem**: Can contain any MDX content

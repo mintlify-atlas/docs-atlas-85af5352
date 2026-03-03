@@ -1,0 +1,304 @@
+---
+title: Pages
+description: Learn how to create and manage documentation pages in Starlight, including file formats, frontmatter configuration, and custom page layouts.
+---
+
+Starlight generates your site's HTML pages based on your content files, with flexible configuration options through Markdown frontmatter. This guide explains how page generation works and how to customize individual pages.
+
+## Content Pages
+
+### Supported File Formats
+
+<CardGroup cols={3}>
+  <Card title="Markdown" icon="markdown">
+    `.md` files with standard Markdown syntax
+  </Card>
+  <Card title="MDX" icon="code">
+    `.mdx` files with JSX components
+  </Card>
+  <Card title="Markdoc" icon="file-text">
+    `.mdoc` files (requires setup)
+  </Card>
+</CardGroup>
+
+Starlight supports authoring content in **Markdown** and **MDX** with no configuration required. You can add support for **Markdoc** by installing the [Astro Markdoc integration](https://docs.astro.build/en/guides/integrations-guide/markdoc/).
+
+### Creating Pages
+
+<Steps>
+  <Step title="Add a new file">
+    Create a new `.md` or `.mdx` file in the `src/content/docs/` directory.
+
+    ```bash
+    src/content/docs/
+    └── hello-world.md
+    ```
+  </Step>
+
+  <Step title="Add frontmatter">
+    Every page must include at least a `title` in its frontmatter:
+
+    ```md title="src/content/docs/hello-world.md"
+    ---
+    title: Hello, World!
+    description: This is a page in my Starlight-powered site
+    ---
+
+    Your content goes here.
+    ```
+  </Step>
+
+  <Step title="Access your page">
+    The page is now available at `/hello-world/` on your site.
+  </Step>
+</Steps>
+
+### URL Structure
+
+Use subdirectories to organize your files and create multi-segment paths:
+
+```bash
+src/content/docs/
+├── hello-world.md          # → /hello-world/
+└── reference/
+    └── faq.md              # → /reference/faq/
+```
+
+<Note>
+  File paths in `src/content/docs/` directly map to URL paths on your site.
+</Note>
+
+## Type-Safe Frontmatter
+
+All Starlight pages share a customizable set of frontmatter properties that control page appearance and behavior. Starlight validates your frontmatter and provides helpful errors if you forget required fields.
+
+### Common Frontmatter Properties
+
+<CodeGroup>
+```yaml "Basic"
+---
+title: Hello, World!
+description: This is a page in my Starlight-powered site
+---
+```
+
+```yaml "With Options"
+---
+title: API Reference
+description: Complete API documentation
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 4
+editUrl: https://github.com/user/repo/edit/main/docs/api.md
+---
+```
+
+```yaml "Splash Template"
+---
+title: Welcome to My Project
+template: splash
+hero:
+  title: Build Something Amazing
+  tagline: The best documentation framework
+  actions:
+    - text: Get Started
+      link: /getting-started/
+      variant: primary
+---
+```
+</CodeGroup>
+
+### Available Properties
+
+Here are the key frontmatter properties you can use:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `title` | `string` | **Required.** The page title shown in the browser and navigation |
+| `description` | `string` | SEO description for search engines and social media |
+| `template` | `'doc' \| 'splash'` | Page layout style. Default is `'doc'` |
+| `editUrl` | `string \| boolean` | URL for the "Edit this page" link |
+| `tableOfContents` | `object` | Configure the table of contents |
+| `hero` | `object` | Add a hero section (splash template only) |
+| `sidebar` | `object` | Customize sidebar appearance and sorting |
+| `draft` | `boolean` | Mark page as draft (shows notice) |
+| `lastUpdated` | `date \| boolean` | Override the last updated date |
+
+<Tip>
+  See the [frontmatter reference](/reference/frontmatter/) for the complete list of available properties.
+</Tip>
+
+## Custom Pages
+
+For advanced use cases, you can create custom pages outside the docs collection using Astro's file-based routing.
+
+### Creating Custom Routes
+
+Create a `src/pages/` directory and add custom page files:
+
+```bash
+src/
+├── content/docs/
+│   └── hello-world.md
+└── pages/
+    ├── custom.astro       # → /custom/
+    └── archived.html      # → /archived/
+```
+
+The `src/pages/` directory supports:
+- `.astro` files (Astro components)
+- `.md` and `.mdx` files (Markdown)
+- `.html` files (static HTML)
+- API endpoints (`.js`, `.ts`)
+
+<Warning>
+  Pages in `src/pages/` bypass Starlight's automatic features like sidebar generation and frontmatter validation.
+</Warning>
+
+## Using Starlight's Design in Custom Pages
+
+You can use Starlight's layout and components in custom pages with the `<StarlightPage>` component.
+
+### StarlightPage Component
+
+```astro title="src/pages/custom-page/example.astro"
+---
+import CustomComponent from './CustomComponent.astro';
+---
+
+<StarlightPage frontmatter={{ title: 'My custom page' }}>
+  <p>This is a custom page with a custom component:</p>
+  <CustomComponent />
+
+  <AnchorHeading level="2" id="learn-more">Learn more</AnchorHeading>
+  <p>
+    <a href="https://starlight.astro.build/">Read more in the Starlight docs</a>
+  </p>
+</StarlightPage>
+```
+
+### Component Props
+
+<Accordion title="frontmatter (required)">
+  Set the [frontmatter properties](/reference/frontmatter/) for this page. The `title` property is required.
+
+  ```astro
+  <StarlightPage frontmatter={{ 
+    title: 'My Page',
+    description: 'A custom page'
+  }}>
+    <!-- content -->
+  </StarlightPage>
+  ```
+</Accordion>
+
+<Accordion title="sidebar">
+  Provide a custom navigation sidebar for this page:
+
+  ```astro
+  <StarlightPage
+    frontmatter={{ title: 'Orion' }}
+    sidebar={[
+      { label: 'Home', link: '/' },
+      {
+        label: 'Constellations',
+        items: [
+          { label: 'Andromeda', link: '/andromeda/' },
+          { label: 'Orion', link: '/orion/' },
+        ],
+      },
+    ]}
+  >
+    <!-- content -->
+  </StarlightPage>
+  ```
+</Accordion>
+
+<Accordion title="hasSidebar">
+  Control whether the sidebar should be displayed. Default is `true` (except for splash template).
+
+  ```astro
+  <StarlightPage 
+    frontmatter={{ title: 'Full Width' }}
+    hasSidebar={false}
+  >
+    <!-- content -->
+  </StarlightPage>
+  ```
+</Accordion>
+
+<Accordion title="headings">
+  Provide headings for the table of contents:
+
+  ```astro
+  <StarlightPage
+    frontmatter={{ title: 'My Page' }}
+    headings={[
+      { depth: 2, slug: 'introduction', text: 'Introduction' },
+      { depth: 2, slug: 'usage', text: 'Usage' },
+    ]}
+  >
+    <!-- content -->
+  </StarlightPage>
+  ```
+</Accordion>
+
+### AnchorHeading Component
+
+The `<AnchorHeading>` component creates headings with clickable anchor links:
+
+```astro
+---
+---
+
+<AnchorHeading level="2" id="sub-heading">Sub heading</AnchorHeading>
+<AnchorHeading level="3" id="details">More details</AnchorHeading>
+```
+
+**Props:**
+- `level` (required): Heading level from 1 to 6
+- `id` (required): Unique ID for the heading anchor
+- Any other valid [HTML global attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes)
+
+## Page Templates
+
+Starlight provides two built-in templates:
+
+<CardGroup cols={2}>
+  <Card title="Doc Template" icon="file-text">
+    The default template with sidebar, table of contents, and standard page layout.
+
+    ```yaml
+    ---
+    title: My Doc Page
+    template: doc
+    ---
+    ```
+  </Card>
+
+  <Card title="Splash Template" icon="sparkles">
+    A wider layout without sidebars, ideal for landing pages with hero sections.
+
+    ```yaml
+    ---
+    title: Welcome
+    template: splash
+    hero:
+      title: Get Started
+      tagline: Build amazing docs
+    ---
+    ```
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Authoring Content" href="/concepts/authoring-content" icon="pen-tool">
+    Learn Markdown syntax and content authoring best practices
+  </Card>
+  
+  <Card title="Sidebar Navigation" href="/concepts/sidebar-navigation" icon="sidebar">
+    Configure your site's sidebar navigation
+  </Card>
+</CardGroup>
