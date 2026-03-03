@@ -1,0 +1,151 @@
+{
+  "projectType": "framework",
+  "projectName": "Starlight",
+  "projectDescription": "Build beautiful, accessible, high-performance documentation websites with Astro",
+  "theme": "palm",
+  "primaryColor": "#8b5cf6",
+  "lightColor": "#a78bfa",
+  "darkColor": "#7c3aed",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "manual-setup",
+              "environmental-impact"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "concepts/project-structure",
+              "concepts/pages",
+              "concepts/authoring-content",
+              "concepts/sidebar-navigation"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/i18n",
+              "guides/site-search",
+              "guides/customization",
+              "guides/css-and-tailwind",
+              "guides/overriding-components",
+              "guides/route-data"
+            ]
+          },
+          {
+            "group": "Built-in Components",
+            "pages": [
+              "components/overview",
+              "components/asides",
+              "components/cards",
+              "components/tabs",
+              "components/steps",
+              "components/code",
+              "components/file-tree",
+              "components/icons",
+              "components/badges",
+              "components/links"
+            ]
+          },
+          {
+            "group": "Plugins",
+            "pages": [
+              "plugins/overview",
+              "plugins/creating-plugins",
+              "plugins/docsearch",
+              "plugins/markdoc",
+              "plugins/tailwind"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Configuration",
+            "pages": [
+              "api/configuration",
+              "api/frontmatter"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "api/starlight-integration",
+              "api/plugin-api"
+            ]
+          },
+          {
+            "group": "Components",
+            "pages": [
+              "api/components/aside",
+              "api/components/badge",
+              "api/components/card",
+              "api/components/card-grid",
+              "api/components/code",
+              "api/components/file-tree",
+              "api/components/icon",
+              "api/components/link-button",
+              "api/components/link-card",
+              "api/components/steps",
+              "api/components/tabs"
+            ]
+          },
+          {
+            "group": "Utilities",
+            "pages": [
+              "api/schema",
+              "api/loaders",
+              "api/route-data"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resources",
+        "groups": [
+          {
+            "group": "Community",
+            "pages": [
+              "resources/showcase",
+              "resources/community-plugins",
+              "resources/contributing"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Built-in UI components (Cards, Tabs, Steps, FileTree, Asides, Badges)",
+    "Internationalization (i18n) with multi-language support",
+    "Automatic sidebar navigation with autogeneration",
+    "Built-in search with Pagefind integration",
+    "Dark mode and theme customization",
+    "Code highlighting with Expressive Code",
+    "Markdown, MDX, and Markdoc support",
+    "Plugin system for extensibility",
+    "Component override system",
+    "Built-in accessibility features"
+  ],
+  "publicApiSurface": [
+    "starlight() - Astro integration function",
+    "docsSchema() - Content collection schema helper",
+    "i18nSchema() - i18n configuration schema",
+    "Components: Aside, Badge, Card, CardGrid, FileTree, Icon, LinkButton, LinkCard, Steps, Tabs, TabItem, Code",
+    "StarlightConfig - Configuration interface",
+    "StarlightPlugin - Plugin interface",
+    "@astrojs/starlight-docsearch - Algolia DocSearch plugin",
+    "@astrojs/starlight-markdoc - Markdoc preset",
+    "@astrojs/starlight-tailwind - Tailwind CSS integration"
+  ]
+}
